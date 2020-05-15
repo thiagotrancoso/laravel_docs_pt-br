@@ -19,16 +19,16 @@ A estrutura do Laravel possui alguns requisitos de sistema. Todos esses requisit
 No entanto, se você não estiver usando o Homestead, precisará garantir que o servidor atenda aos seguintes requisitos:
 
 <div class="content-list" markdown="1">
-- PHP >= 7.2.0
-- BCMath PHP Extension
-- Ctype PHP Extension
-- Fileinfo PHP extension
-- JSON PHP Extension
-- Mbstring PHP Extension
-- OpenSSL PHP Extension
-- PDO PHP Extension
-- Tokenizer PHP Extension
-- XML PHP Extension
+- `PHP >= 7.2.0`
+- `BCMath PHP Extension`
+- `Ctype PHP Extension`
+- `Fileinfo PHP extension`
+- `JSON PHP Extension`
+- `Mbstring PHP Extension`
+- `OpenSSL PHP Extension`
+- `PDO PHP Extension`
+- `Tokenizer PHP Extension`
+- `XML PHP Extension`
 </div>
 
 <a name="installing-laravel"></a>
