@@ -2,18 +2,18 @@
 
 - [Laravel Homestead](#laravel-homestead)
   - [Introdução](#introdução)
-    - [Software Incluído](#software-incluído)
+    - [Software incluído](#software-incluído)
     - [Software opcional](#software-opcional)
   - [Instalação e configuração](#instalação-e-configuração)
     - [Primeiros passos](#primeiros-passos)
       - [Instalação da box do Homestead no Vagrant](#instalação-da-box-do-homestead-no-vagrant)
-      - [Instalando o Homestead](#instalando-o-homestead)
-    - [Configurando o Homestead](#configurando-o-homestead)
-      - [Configurando seu provedor](#configurando-seu-provedor)
+      - [Instalando Homestead](#instalando-homestead)
+    - [Configurando Homestead](#configurando-homestead)
+      - [Configurando seu provider](#configurando-seu-provider)
       - [Configurando pastas compartilhadas](#configurando-pastas-compartilhadas)
       - [Configurando sites Nginx](#configurando-sites-nginx)
       - [Resolução de nome de host](#resolução-de-nome-de-host)
-    - [Iniciando a box Vagrant](#iniciando-a-box-vagrant)
+    - [Iniciando a box do Vagrant](#iniciando-a-box-do-vagrant)
     - [Instalação por projeto](#instalação-por-projeto)
     - [Instalando recursos opcionais](#instalando-recursos-opcionais)
       - [MariaDB](#mariadb)
@@ -22,25 +22,25 @@
       - [Neo4j](#neo4j)
     - [Aliases](#aliases)
   - [Uso diário](#uso-diário)
-    - [Acessando Homestead Globalmente](#acessando-homestead-globalmente)
-      - [Mac / Linux](#mac--linux)
+    - [Acessando o Homestead globalmente](#acessando-o-homestead-globalmente)
+      - [Mac/Linux](#maclinux)
       - [Windows](#windows)
     - [Conectando via SSH](#conectando-via-ssh)
-    - [Conectando ao banco de dados](#conectando-ao-banco-de-dados)
+    - [Conectando no banco de dados](#conectando-no-banco-de-dados)
     - [Backups de banco de dados](#backups-de-banco-de-dados)
-    - [Snapshots de Banco de dados](#snapshots-de-banco-de-dados)
-    - [Adicionando sites adicionais](#adicionando-sites-adicionais)
+    - [Snapshots de banco de dados](#snapshots-de-banco-de-dados)
+    - [Adicionando sites](#adicionando-sites)
       - [Tipos de site](#tipos-de-site)
       - [Parâmetros do site](#parâmetros-do-site)
     - [Variáveis de ambiente](#variáveis-de-ambiente)
-    - [Configurando Cron Schedules](#configurando-cron-schedules)
-    - [Configurando o Mailhog](#configurando-o-mailhog)
-    - [Configurando o Minio](#configurando-o-minio)
+    - [Configurando tarefas cron](#configurando-tarefas-cron)
+    - [Configurando Mailhog](#configurando-mailhog)
+    - [Configurando Minio](#configurando-minio)
     - [Portas](#portas)
       - [Encaminhando portas adicionais](#encaminhando-portas-adicionais)
     - [Compartilhando seu ambiente](#compartilhando-seu-ambiente)
     - [Várias versões do PHP](#várias-versões-do-php)
-    - [Servidores Web](#servidores-web)
+    - [Servidores web](#servidores-web)
     - [E-mail](#e-mail)
   - [Depuração e criação de perfil](#depuração-e-criação-de-perfil)
     - [Depurando solicitações com o Xdebug](#depurando-solicitações-com-o-xdebug)
@@ -69,7 +69,7 @@ O Homestead roda em qualquer sistema Windows, Mac ou Linux e inclui Nginx, PHP, 
 > {note} Se você estiver usando o Windows, pode ser necessário ativar a virtualização de hardware (VT-x). Geralmente, ele pode ser ativado via BIOS. Se você estiver usando o Hyper-V em um sistema UEFI, poderá ser necessário desativar o Hyper-V para acessar o VT-x.
 
 <a name="included-software"></a>
-### Software Incluído
+### Software incluído
 
 <style>
     #software-list > ul {
@@ -152,11 +152,11 @@ O Homestead roda em qualquer sistema Windows, Mac ou Linux e inclui Nginx, PHP, 
 
 Antes de iniciar seu ambiente Homestead, você deve instalar o [VirtualBox 6.x](https://www.virtualbox.org/wiki/Downloads), [VMWare](https://www.vmware.com), [Parallels](https://www.parallels.com/products/desktop/) ou [Hyper-V](https://docs.microsoft.com/en-us/virtualization/hyper-v-on-windows/quick-start/enable-hyper-v) assim como [Vagrant](https://www.vagrantup.com/downloads.html). Todos esses pacotes de software fornecem instaladores visuais fáceis de usar para os sistemas operacionais populares.
 
-Para usar o provedor VMware, você precisará adquirir o "VMware Fusion ou Workstation" e o [VMware Vagrant plug-in](https://www.vagrantup.com/vmware). Embora não seja gratuito, o VMware pode fornecer um desempenho mais rápido das pastas compartilhadas.
+Para usar o **provider** VMware, você precisará adquirir o "VMware Fusion ou Workstation" e o [VMware Vagrant plug-in](https://www.vagrantup.com/vmware). Embora não seja gratuito, o VMware pode fornecer um desempenho mais rápido das pastas compartilhadas.
 
-Para usar o provedor Parallels, você precisará instalar [Parallels Vagrant plug-in](https://github.com/Parallels/vagrant-parallels). É grátis.
+Para usar o **provider** Parallels, você precisará instalar [Parallels Vagrant plug-in](https://github.com/Parallels/vagrant-parallels). É grátis.
 
-Por causa das [limitações do Vagrant](https://www.vagrantup.com/docs/hyperv/limitations.html), o provedor Hyper-V ignora todas as configurações de rede.
+Por causa das [limitações do Vagrant](https://www.vagrantup.com/docs/hyperv/limitations.html), o **provider** Hyper-V ignora todas as configurações de rede.
 
 #### Instalação da box do Homestead no Vagrant
 
@@ -168,7 +168,7 @@ Se esse comando falhar, verifique se a instalação do Vagrant está atualizada.
 
 > {note} O Homestead emite periodicamente ***boxes*** "alfa" / "beta" para teste, o que pode interferir no comando `vagrant box add`. Se você está tendo problemas ao executar o comando `vagrant box add`, você pode executar o comando `vagrant up` e a ***box*** correta será baixada quando o Vagrant tentar iniciar a máquina virtual.
 
-#### Instalando o Homestead
+#### Instalando Homestead
 
 Você pode instalar o Homestead clonando o repositório na sua máquina host. Considere a clonagem do repositório dentro da pasta `Homestead`, dentro do diretório "home", pois a *box* Homestead servirá como host para todos os seus projetos do Laravel:
 
@@ -189,11 +189,11 @@ Depois de clonar o repositório Homestead, execute o comando `bash init.sh` no d
     init.bat
 
 <a name="configuring-homestead"></a>
-### Configurando o Homestead
+### Configurando Homestead
 
-#### Configurando seu provedor
+#### Configurando seu provider
 
-A chave `provider` no seu arquivo `Homestead.yaml` indica qual provedor deve ser usado pelo Vagrant: `virtualbox`, `vmware_fusion`, `vmware_workstation`, `parallels` ou `hyperv`. Você pode definir o provedor de sua preferência:
+A chave `provider` no seu arquivo `Homestead.yaml` indica qual **provider** deve ser usado pelo Vagrant: `virtualbox`, `vmware_fusion`, `vmware_workstation`, `parallels` ou `hyperv`. Você pode definir o **provider** de sua preferência:
 
     provider: virtualbox
 
@@ -263,7 +263,7 @@ Verifique se o endereço IP listado é o definido no seu arquivo `Homestead.yaml
     http://homestead.test
 
 <a name="launching-the-vagrant-box"></a>
-### Iniciando a box Vagrant
+### Iniciando a box do Vagrant
 
 Depois de editar o arquivo `Homestead.yaml` a sua necessidade, execute o comando `vagrant up` no diretório Homestead. O Vagrant inicializará a máquina virtual e configurará automaticamente suas pastas compartilhadas e sites Nginx.
 
@@ -357,11 +357,11 @@ Depois de atualizar o arquivo `aliases`, você deve provisionar novamente a máq
 ## Uso diário
 
 <a name="accessing-homestead-globally"></a>
-### Acessando Homestead Globalmente
+### Acessando o Homestead globalmente
 
 Às vezes, você pode querer executar o comando `vagrant up` em sua máquina Homestead de qualquer lugar no seu sistema de arquivos. Você pode fazer isso em sistemas Mac e Linux adicionando uma função Bash ao seu perfil Bash. No Windows, você pode fazer isso adicionando um arquivo "batch" ao seu `PATH`. Esses scripts permitem executar qualquer comando do Vagrant de qualquer lugar do sistema e apontam esse comando automaticamente para a instalação do Homestead:
 
-#### Mac / Linux
+#### Mac/Linux
 
     function homestead() {
         ( cd ~/Homestead && vagrant $* )
@@ -394,7 +394,7 @@ Você pode se conectar via SSH na sua máquina virtual executando o comando `vag
 Porém, como você provavelmente precisará fazer o SSH na máquina Homestead com frequência, considere adicionar a função descrita acima na máquina host para fazer o SSH rapidamente na máquina Homestead.
 
 <a name="connecting-to-databases"></a>
-### Conectando ao banco de dados
+### Conectando no banco de dados
 
 Um banco de dados MySQL e PostgreSQL chamado `homestead` será configurado automaticamente. Para conectar-se ao banco de dados MySQL ou PostgreSQL a partir da máquina host, você deve usar o ip `127.0.0.1` e a porta `33060` (MySQL) ou `54320` (PostgreSQL). O nome de usuário e a senha dos dois bancos de dados são `homestead` / `secret`.
 
@@ -410,7 +410,7 @@ O Homestead pode fazer backup automaticamente do seu banco de dados quando sua *
 Uma vez configurado, o Homestead exportará seus bancos de dados para os diretórios `mysql_backup` e `postgres_backup` quando o comando `vagrant destroy` for executado. Esses diretórios podem ser encontrados na pasta em que você clonou o Homestead ou na raiz do seu projeto, se você estiver usando o método [instalação por projeto](#per-project-installation).
 
 <a name="database-snapshots"></a>
-### Snapshots de Banco de dados
+### Snapshots de banco de dados
 
 O Homestead suporta o congelamento do estado dos bancos de dados MySQL e MariaDB e a ramificação entre eles usando o [Gerenciador Lógico do MySQL](https://github.com/Lullabot/lmm). Por exemplo, imagine trabalhar em um site com um banco de dados de vários gigabytes. Você pode importar um **snapshot** do banco de dados. Depois de fazer algum trabalho e criar algum conteúdo de teste localmente, você poderá restaurar rapidamente o estado original.
 
@@ -425,7 +425,7 @@ Como o `lmm` interage com o **LVM**, ele deve ser executado como `root`. Para ve
 1. Execute `sudo lmm delete <branch>` para excluir **branches** desnecessárias.
 
 <a name="adding-additional-sites"></a>
-### Adicionando sites adicionais
+### Adicionando sites
 
 Depois que seu ambiente Homestead estiver provisionado e em execução, você poderá adicionar sites Nginx adicionais para seus aplicativos Laravel. Você pode executar quantas instalações do Laravel desejar em um único ambiente Homestead. Para adicionar um site, altere a chave `sites` ao seu arquivo `Homestead.yaml`:
 
@@ -480,7 +480,7 @@ Você pode definir variáveis ​​de ambiente globais adicionando-as ao seu ar
 Após atualizar o `Homestead.yaml`, certifique-se de reaprovisionar a máquina virtual executando `vagrant reload --provision`. Isso atualizará a configuração do PHP-FPM para todas as versões instaladas do PHP e também atualizará o ambiente para o usuário `vagrant`.
 
 <a name="configuring-cron-schedules"></a>
-### Configurando Cron Schedules
+### Configurando tarefas cron
 
 O Laravel fornece uma maneira conveniente de [agendar tarefas do Cron](/docs/{{version}}/scheduling) com um único comando `php artisan schedule:run` para ser executado a cada minuto. O comando `schedule:run` examinará o agendamento de tarefas definido em sua classe `App\Console\Kernel` para determinar quais tarefas devem ser executadas.
 
@@ -494,7 +494,7 @@ Se você deseja que o comando `schedule:run` seja executado em um site Homestead
 A tarefa Cron para o site será definido na pasta `/etc/cron.d` da máquina virtual.
 
 <a name="configuring-mailhog"></a>
-### Configurando o Mailhog
+### Configurando Mailhog
 
 O Mailhog permite capturar facilmente seu email de saída e examiná-lo sem realmente enviar o email para seus destinatários. Para começar, atualize o arquivo `.env` para usar as seguintes configurações de email:
 
@@ -508,7 +508,7 @@ O Mailhog permite capturar facilmente seu email de saída e examiná-lo sem real
 Depois que o Mailhog estiver configurado, você poderá acessar o painel do Mailhog em `http://localhost:8025`.
 
 <a name="configuring-minio"></a>
-### Configurando o Minio
+### Configurando Minio
 
 O Minio é um servidor de armazenamento de objetos de código aberto com uma API compatível com Amazon S3. Para instalar o Minio, atualize seu arquivo `Homestead.yaml` com a seguinte opção de configuração na seção [features](#installing-optional-features):
 
@@ -617,7 +617,7 @@ Você também pode atualizar a versão padrão da CLI emitindo os seguintes coma
     php74
 
 <a name="web-servers"></a>
-### Servidores Web
+### Servidores web
 
 O Homestead usa o servidor Nginx por padrão. No entanto, ele pode instalar o Apache se o `apache` for especificado como um tipo de site. Embora os dois servidores da Web possam ser instalados ao mesmo tempo, eles não podem estar *em execução* ao mesmo tempo. O comando shell `flip` está disponível para facilitar o processo de alternância entre servidores web. O comando `flip` determina automaticamente qual servidor web está sendo executado, o desliga e depois inicia o outro servidor. Para usar este comando, faça o SSH na sua máquina Homestead e execute o comando no seu terminal:
 
