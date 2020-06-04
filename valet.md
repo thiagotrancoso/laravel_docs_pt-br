@@ -1,23 +1,23 @@
 # Laravel Valet
 
-- [Introdução](#Introdução)
-    - [Valet ou Homestead](#Valet-ou-Homestead)
-- [Instalação](#Instalação)
-    - [Atualizando](#Atualizando)
-- [Sites de exibição](#Sites-de-exibição)
-    - [O comando `park`](#O-comando-`park`)
-    - [O comando `link`](#O-comando-`link`)
-    - [Protegendo sites com TLS](#Protegendo-sites-com-TLS)
-- [Compartilhando sites](#Compartilhando-sites)
-- [Variáveis ​​de ambiente específicas do site](#Variáveis-​​de-ambiente-específicas-do-site)
-- [Servindo um site padrão](#Servindo-um-site-padrão)
-- [Drivers personalizados do Valet](#Drivers-personalizados-do-Valet)
-    - [Drivers locais](#Drivers-locais)
-- [Configuração do PHP](#Configuração-do-PHP)
-- [Outros comandos do Valet](#Outros-comandos-do-Valet)
-- [Diretórios e arquivos do Valet](#Diretórios-e-arquivos-do-Valet)
+- [Introdução](#introducao)
+    - [Valet ou Homestead](#valet-ou-homestead)
+- [Instalação](#instalacao)
+    - [Atualizando](#atualizando)
+- [Sites de exibição](#sites-de-exibicao)
+    - [O comando `park`](#o-comando-park)
+    - [O comando `link`](#o-comando-link)
+    - [Protegendo sites com TLS](#protegendo-sites-com-tls)
+- [Compartilhando sites](#compartilhando-sites)
+- [Variáveis ​​de ambiente específicas do site](#variaveis-​​de-ambiente-especificas-do-site)
+- [Servindo um site padrão](#servindo-um-site-padrao)
+- [Drivers personalizados do Valet](#drivers-personalizados-do-valet)
+    - [Drivers locais](#drivers-locais)
+- [Configuração do PHP](#configuracao-do-php)
+- [Outros comandos do Valet](#outros-comandos-do-valet)
+- [Diretórios e arquivos do Valet](#diretorios-e-arquivos-do-valet)
 
-<a name="introduction"></a>
+<a name="introducao"></a>
 ## Introdução
 
 O Valet é um ambiente de desenvolvimento do Laravel para minimalistas do Mac. No Vagrant, no arquivo `/etc/hosts`. Você pode até compartilhar seus sites usando túneis locais. *Sim, nós também gostamos*.
@@ -61,7 +61,7 @@ Pronto para uso, o suporte com Valet inclui, mas não se limita a:
 
 No entanto, você pode estender o Valet com seus próprios [drivers personalizados](#custom-valet-drivers).
 
-<a name="valet-or-homestead"></a>
+<a name="valet-ou-homestead"></a>
 ### Valet ou Homestead
 
 Como você deve saber, o Laravel oferece o [Homestead](/docs/{{version}}/homestead), outro ambiente de desenvolvimento local do Laravel. O Homestead e Valet diferem em relação ao público-alvo e sua abordagem ao desenvolvimento local. O Homestead oferece uma máquina virtual completa do Ubuntu com configuração automatizada de Nginx. O Homestead é uma escolha maravilhosa se você deseja um ambiente de desenvolvimento Linux totalmente virtualizado ou está no Windows/Linux.
@@ -70,7 +70,7 @@ O Valet tem suporte apenas para Mac e exige que você instale o PHP e um servido
 
 Tanto o Valet quanto o Homestead são ótimas opções para configurar o ambiente de desenvolvimento do Laravel. Qual você escolher dependerá do seu gosto pessoal e das necessidades de sua equipe.
 
-<a name="installation"></a>
+<a name="instalacao"></a>
 ## Instalação
 
 **O Valet requer macOS e [Homebrew](https://brew.sh/). Antes da instalação, certifique-se de que nenhum outro programa, como o Apache ou o Nginx, esteja vinculado à porta 80 da sua máquina local.**
@@ -111,17 +111,17 @@ O Valet permite que você alterne as versões do PHP usando o comando `valet use
 
 Se você está tendo problemas para executar corretamente a instalação do Valet, executar o comando `composer global update` seguido de `valet install` redefinirá sua instalação e poderá resolver uma variedade de problemas. Em casos raros, pode ser necessário "reinstalar" o Valet executando `valet uninstall --force` seguido de `valet install`.
 
-<a name="upgrading"></a>
+<a name="atualizando"></a>
 ### Atualizando
 
 Você pode atualizar sua instalação do Valet usando o comando `composer global update` no seu terminal. Após a atualização, é uma boa prática executar o comando `valet install` para que o Valet possa fazer atualizações adicionais nos seus arquivos de configuração, se necessário.
 
-<a name="serving-sites"></a>
+<a name="sites-de-exibicao"></a>
 ## Sites de exibição
 
 Depois que o Valet estiver instalado, você estará pronto para começar a servir sites. O Valet fornece dois comandos para ajudá-lo a servir os sites do Laravel: `park` e `link`.
 
-<a name="the-park-command"></a>
+<a name="o-comando-park"></a>
 #### O comando `park`
 
 <div class="content-list" markdown="1">
@@ -132,7 +132,7 @@ Depois que o Valet estiver instalado, você estará pronto para começar a servi
 
 **É tudo o que há para isso.** Agora, qualquer projeto do Laravel que você criar dentro do diretório "parked" será servido automaticamente usando a convenção `http://folder-name.test`.
 
-<a name="the-link-command"></a>
+<a name="o-comando-link"></a>
 #### O comando `link`
 
 O comando `link` também pode ser usado para servir os sites do Laravel. Este comando é útil se você deseja servir um único site em um diretório e não o diretório inteiro.
@@ -146,7 +146,7 @@ Para ver uma lista de todos os seus diretórios vinculados, execute o comando `v
 
 > {tip} Você pode usar o `link valet` para servir o mesmo projeto de vários (sub)domínios. Para adicionar um subdomínio ou outro domínio ao seu projeto, execute `valet link subdomain.app-name` na pasta do projeto.
 
-<a name="securing-sites"></a>
+<a name="protegendo-sites-com-tls"></a>
 #### Protegendo sites com TLS
 
 Por padrão, o Valet exibe sites em HTTP simples. No entanto, se você deseja servir um site através de TLS criptografado usando HTTP/2, use o comando `secure`. Por exemplo, se seu site estiver sendo veiculado por Valet no domínio `laravel.test`, você deve executar o seguinte comando para protegê-lo:
@@ -157,7 +157,7 @@ Para "desproteger" um site e voltar a servir seu tráfego através de HTTP simpl
 
     valet unsecure laravel
 
-<a name="sharing-sites"></a>
+<a name="compartilhando-sites"></a>
 ## Compartilhando sites
 
 O Valet ainda inclui um comando para compartilhar seus sites locais com o mundo, fornecendo uma maneira fácil de testar seu site em dispositivos móveis ou compartilhá-lo com membros da equipe e clientes. Nenhuma instalação de software adicional é necessária após a instalação do Valet.
@@ -180,7 +180,7 @@ Se você não executou o `valet secure` no projeto, poderá abrir o acesso à re
 
 Depois de atualizar sua configuração do Nginx, execute o comando `valet restart` para aplicar as alterações na configuração.
 
-<a name="site-specific-environment-variables"></a>
+<a name="variaveis-​​de-ambiente-especificas-do-site"></a>
 ## Variáveis ​​de ambiente específicas do site
 
 Alguns aplicativos que usam outras estruturas podem depender das variáveis ​​de ambiente do servidor, mas não fornecem uma maneira de configurar essas variáveis ​​no seu projeto. O valet permite que você configure variáveis ​​de ambiente específicas do site adicionando um arquivo `.valet-env.php` na raiz do seu projeto. Essas variáveis ​​serão adicionadas à matriz global `$ _SERVER`:
@@ -201,14 +201,14 @@ Alguns aplicativos que usam outras estruturas podem depender das variáveis ​�
         ],
     ];
 
-<a name="serving-a-default-site"></a>
+<a name="servindo-um-site-padrao"></a>
 ## Servindo um site padrão
 
 Às vezes, você pode configurar o Valet para servir um site "padrão" em vez de um `404` ao visitar um domínio desconhecido de `test`. Para fazer isso, você pode adicionar uma opção `default` ao seu arquivo de configuração `~/.config/valet/config.json` que contém o caminho para o site que deve funcionar como seu site padrão:
 
     "default": "/Users/Sally/Sites/foo",
 
-<a name="custom-valet-drivers"></a>
+<a name="drivers-personalizados-do-valet"></a>
 ## Drivers personalizados do Valet
 
 Você pode escrever seu próprio "driver" do Valet para atender a aplicativos PHP em execução em outra estrutura ou CMS que não seja suportado nativamente pelo Valet. Quando você instala o Valet, é criado o diretório `~/.config/valet/Drivers` que contém o arquivo `SampleValetDriver.php`. Este arquivo contém uma implementação de driver de amostra para demonstrar como gravar um driver personalizado. Escrever um driver requer apenas a implementação de três métodos: `serves`, `isStaticFile` e `frontControllerPath`.
@@ -278,7 +278,7 @@ O método `frontControllerPath` deve retornar o caminho completo ao "front contr
         return $sitePath.'/public/index.php';
     }
 
-<a name="local-drivers"></a>
+<a name="drivers-locais"></a>
 ### Drivers locais
 
 Se você deseja definir um driver Valet personalizado para um único aplicativo, crie um `LocalValetDriver.php` no diretório raiz do aplicativo. Seu driver personalizado pode estender a classe base `ValetDriver` ou estender um driver específico de aplicativo existente, como o `LaravelValetDriver`:
@@ -312,7 +312,7 @@ Se você deseja definir um driver Valet personalizado para um único aplicativo,
         }
     }
 
-<a name="php-configuration"></a>
+<a name="configuracao-do-php"></a>
 ## Configuração do PHP
 
 Você pode adicionar outros arquivos `.ini` de configuração do PHP no diretório `/usr/local/etc/php/7.X/conf.d/` para personalizar sua instalação do PHP. Depois de adicionar ou atualizar essas configurações, você deve executar o `valet restart php`.
@@ -325,7 +325,7 @@ Por padrão, o Valet especifica o limite de memória da instalação do PHP e o 
 
 A configuração do PHP-FPM do Valet está contida no arquivo de configuração `/usr/local/etc/php/7.X/php-fpm.d/valet-fpm.conf`. Nesse arquivo, você pode aumentar o número de servidores FPM e processos filhos utilizados pelo seu aplicativo PHP.
 
-<a name="other-valet-commands"></a>
+<a name="outros-comandos-do-valet"></a>
 ## Outros comandos do Valet
 
 Comando  | Descrição
@@ -339,7 +339,7 @@ Comando  | Descrição
 `valet trust` | Adicione arquivos sudoers para Brew e Valet para permitir que comandos Valet sejam executados sem solicitar senhas.
 `valet uninstall` | Desinstalar o Valet: Mostra instruções para desinstalação manual ou passe o parâmetro `--force` para excluir agressivamente todo o Valet.
 
-<a name="valet-directories-and-files"></a>
+<a name="diretorios-e-arquivos-do-valet"></a>
 ## Diretórios e arquivos do Valet
 
 Você pode encontrar as seguintes informações de diretório e arquivo úteis ao solucionar problemas com o ambiente Valet:
