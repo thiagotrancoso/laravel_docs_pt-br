@@ -36,9 +36,9 @@ Uma das ações mais importantes de inicialização do Kernel é carregar o [ser
 
 Os **service providers** são responsáveis ​​por inicializar todos os vários componentes do framework, como os componentes de banco de dados, fila, validação e roteamento. Como eles inicializam e configuram todos os recursos oferecidos pelo framework, os **service providers** são o aspecto mais importante de todo o processo de inicialização do Laravel.
 
-#### Dispatch Request
+#### Envio do Request
 
-Depois que o aplicativo for inicializado e todos os **service providers** tiverem sido registrados, o `Request` será entregue ao **router** para envio. O **router** enviará a solicitação para uma rota ou **controller**, além de executar qualquer **middleware** específico da rota.
+Depois que o aplicativo for inicializado e todos os **service providers** tiverem sido registrados, o `Request` será entregue ao **router** para envio. O **router** enviará a **request** para uma rota ou **controller**, além de executar qualquer **middleware** específico da rota.
 
 <a name="focar-em-service-providers"></a>
 ## Focar em Service Providers
