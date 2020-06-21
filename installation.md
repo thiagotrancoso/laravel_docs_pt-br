@@ -1,20 +1,20 @@
 # Instalação
 
-- [Instalação](#installation)
-    - [Requisitos do servidor](#server-requirements)
-    - [Instalando o Laravel](#installing-laravel)
-    - [Configuração](#configuration)
-- [Configuração do servidor](#web-server-configuration)
-    - [Configuração de Diretório](#directory-configuration)
-    - [URLs amigáveis](#pretty-urls)
+- [Instalação](#instalacao)
+    - [Requisitos do servidor](#requisitos-do-servidor)
+    - [Instalando o Laravel](#instalando-o-laravel)
+    - [Configuração](#configuracao)
+- [Configuração do servidor](#configuracao-do-servidor)
+    - [Configuração de Diretório](#configuracao-de-diretorio)
+    - [URLs amigáveis](#urls-amigaveis)
 
-<a name="installation"></a>
+<a name="instalacao"></a>
 ## Instalação
 
-<a name="server-requirements"></a>
+<a name="requisitos-do-servidor"></a>
 ### Requisitos do servidor
 
-A estrutura do Laravel possui alguns requisitos de sistema. Todos esses requisitos são atendidos pela máquina virtual [Laravel Homestead](/docs/{{version}}/homestead), portanto, é altamente recomendável que você use o Homestead como seu ambiente de desenvolvimento local do Laravel.
+A estrutura do Laravel possui alguns requisitos de sistema. Todos esses requisitos são atendidos pela máquina virtual Laravel Homestead, portanto, é altamente recomendável que você use o Homestead como seu ambiente de desenvolvimento local do Laravel.
 
 No entanto, se você não estiver usando o Homestead, precisará garantir que o servidor atenda aos seguintes requisitos:
 
@@ -31,7 +31,7 @@ No entanto, se você não estiver usando o Homestead, precisará garantir que o 
 - `XML PHP Extension`
 </div>
 
-<a name="installing-laravel"></a>
+<a name="instalando-o-laravel"></a>
 ### Instalando o Laravel
 
 O Laravel utiliza o [Composer](https://getcomposer.org) para gerenciar suas dependências. Portanto, antes de usar o Laravel, verifique se o Composer está instalado em sua máquina.
@@ -40,7 +40,9 @@ O Laravel utiliza o [Composer](https://getcomposer.org) para gerenciar suas depe
 
 Primeiro, faça o download do instalador do Laravel usando o Composer:
 
-    composer global require laravel/installer
+```bash
+composer global require laravel/installer
+```
 
 Coloque o diretório bin do Composer na variável de ambiente `$PATH`, para que o executável do laravel possa ser localizado pelo seu sistema. O diretório bin existe em diferentes locais, com base no seu sistema operacional, no entanto, alguns locais comuns incluem:
 
@@ -54,23 +56,29 @@ Você também pode encontrar o caminho de instalação global do Composer execut
 
 Uma vez instalado, o comando `laravel new` criará uma nova instalação do Laravel no diretório que você especificar. Por exemplo, o comando `laravel new blog` criará um diretório chamado `blog` contendo uma nova instalação do Laravel com todas as dependências do Laravel já instaladas:
 
-    laravel new blog
+```bash
+laravel new blog
+```
 
 #### Instalando Via Composer Create-Project
 
 Como alternativa, você também pode instalar o Laravel executando o comando `composer create-project` no seu terminal:
 
-    composer create-project --prefer-dist laravel/laravel blog "6.*"
+```bash
+composer create-project --prefer-dist laravel/laravel blog "6.*"
+```
 
 #### Servidor de Desenvolvimento Local
 
 Se você possui o PHP instalado localmente e gostaria de usar o servidor de desenvolvimento interno do PHP para atender ao seu aplicativo, você pode usar o comando `artisan serve`. Este comando iniciará um servidor de desenvolvimento em `http://localhost:8000`:
 
-    php artisan serve
+```bash
+php artisan serve
+```
 
-Opções de desenvolvimento local mais robustas estão disponíveis via [Homestead](/docs/{{version}}/homestead) e [Valet](/docs/{{version}}/valet).
+Opções de desenvolvimento local mais robustas estão disponíveis via Homestead e Valet.
 
-<a name="configuration"></a>
+<a name="configuracao"></a>
 ### Configuração
 
 #### Diretório público
@@ -83,7 +91,7 @@ Todos os arquivos de configuração da estrutura do Laravel são armazenados no 
 
 #### Permissões de diretório
 
-Após a instalação do Laravel, você pode precisar configurar algumas permissões. Os diretórios dentro de `storage` e `bootstrap/cache` devem ser graváveis pelo servidor da Web ou o Laravel não será executado. Se você estiver usando a máquina virtual [Homestead](/docs/{{version}}/homestead), essas permissões já estarão definidas.
+Após a instalação do Laravel, você pode precisar configurar algumas permissões. Os diretórios dentro de `storage` e `bootstrap/cache` devem ser graváveis pelo servidor da Web ou o Laravel não será executado. Se você estiver usando a máquina virtual Homestead, essas permissões já estarão definidas.
 
 #### Chave do aplicativo
 
@@ -98,20 +106,20 @@ O Laravel quase não precisa de outra configuração para uso. Você está livre
 Você também pode configurar alguns componentes adicionais do Laravel, como:
 
 <div class="content-list" markdown="1">
-- [Cache](/docs/{{version}}/cache#configuration)
-- [Database](/docs/{{version}}/database#configuration)
-- [Session](/docs/{{version}}/session#configuration)
+- Cache
+- Database
+- Session
 </div>
 
-<a name="web-server-configuration"></a>
+<a name="configuracao-do-servidor"></a>
 ## Configuração do servidor
 
-<a name="directory-configuration"></a>
+<a name="configuracao-de-diretorio"></a>
 ### Configuração de Diretório
 
 O Laravel sempre deve ser disponibilizado fora da raiz do "diretório da web" configurado no seu servidor. Você não deve tentar disponiblizar um aplicativo Laravel a partir de um subdiretório do "diretório da web". Fazer isso pode expor arquivos confidenciais presentes no seu aplicativo.
 
-<a name="pretty-urls"></a>
+<a name="urls-amigaveis"></a>
 ### URLs amigáveis
 
 #### Apache
@@ -120,22 +128,26 @@ O Laravel inclui um arquivo `public/.htaccess` que é usado para fornecer URLs a
 
 Se o arquivo `.htaccess` fornecido com o Laravel não funcionar com a instalação do Apache, tente esta alternativa:
 
-    Options +FollowSymLinks -Indexes
-    RewriteEngine On
+```text
+Options +FollowSymLinks -Indexes
+RewriteEngine On
 
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^ index.php [L]
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^ index.php [L]
+```
 
 #### Nginx
 
 Se você estiver usando o Nginx, a seguinte diretiva na configuração do seu site direcionará todas as solicitações para `index.php`:
 
-    location / {
-        try_files $uri $uri/ /index.php?$query_string;
-    }
+```text
+location / {
+    try_files $uri $uri/ /index.php?$query_string;
+}
+```
 
-Ao usar o [Homestead](/docs/{{version}}/homestead) ou [Valet](/docs/{{version}}/valet), as URLs amigáveis serão configuradas automaticamente.
+Ao usar o Homestead ou Valet, as URLs amigáveis serão configuradas automaticamente.
