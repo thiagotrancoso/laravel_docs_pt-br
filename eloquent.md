@@ -1,1068 +1,1217 @@
-# Eloquent: Getting Started
+# Eloquent: Começando
 
-- [Introduction](#introduction)
-- [Defining Models](#defining-models)
-    - [Eloquent Model Conventions](#eloquent-model-conventions)
-    - [Default Attribute Values](#default-attribute-values)
-- [Retrieving Models](#retrieving-models)
-    - [Collections](#collections)
-    - [Chunking Results](#chunking-results)
-    - [Advanced Subqueries](#advanced-subqueries)
-- [Retrieving Single Models / Aggregates](#retrieving-single-models)
-    - [Retrieving Aggregates](#retrieving-aggregates)
-- [Inserting & Updating Models](#inserting-and-updating-models)
-    - [Inserts](#inserts)
-    - [Updates](#updates)
-    - [Mass Assignment](#mass-assignment)
-    - [Other Creation Methods](#other-creation-methods)
-- [Deleting Models](#deleting-models)
-    - [Soft Deleting](#soft-deleting)
-    - [Querying Soft Deleted Models](#querying-soft-deleted-models)
-- [Replicating Models](#replicating-models)
-- [Query Scopes](#query-scopes)
-    - [Global Scopes](#global-scopes)
-    - [Local Scopes](#local-scopes)
-- [Comparing Models](#comparing-models)
-- [Events](#events)
+- [Introdução](#introducao)
+- [Definindo modelos](#definindo-modelos)
+    - [Convenções do modelo eloquent](#convencoes-do-modelo-eloquent)
+    - [Valores padrão para atributos](#valores-padrao-para-atributos)
+- [Recuperando modelos](#recuperando-modelos)
+    - [Coleções](#colecoes)
+    - [Resultados com chunking](#resultados-com-chunking)
+    - [Subqueries avançadas](#subqueries-avancadas)
+- [Recuperando modelos únicos / agregados](#recuperando-modelos-unicos)
+    - [Recuperando agregados](#recuperando-agregados)
+- [Inserindo e atualizando modelos](#inserindo-e-atualizando-modelos)
+    - [Inserindo](#inserindo)
+    - [Atualizando](#atualizando)
+    - [Atribuição em massa](#atribuicao-em-massa)
+    - [Outros métodos de criação](#outros-metodos-de-criacao)
+- [Excluindo modelos](#excluindo-modelos)
+    - [Soft deleting](#soft-deleting)
+    - [Consultando soft delete](#consultando-soft-delete)
+- [Replicando modelos](#replicando-modelos)
+- [Query scopes](#query-scopes)
+    - [Escopos globais](#escopos-globais)
+    - [Escopos locais](#escopos-locais)
+- [Comparando modelos](#comparando-modelos)
+- [Eventos](#eventos)
     - [Observers](#observers)
 
-<a name="introduction"></a>
-## Introduction
+<a name="introducao"></a>
+## Introdução
 
-The Eloquent ORM included with Laravel provides a beautiful, simple ActiveRecord implementation for working with your database. Each database table has a corresponding "Model" which is used to interact with that table. Models allow you to query for data in your tables, as well as insert new records into the table.
+O ORM Eloquent incluído no Laravel fornece uma implementação bonita e simples do ActiveRecord para trabalhar com seu banco de dados. Cada tabela de banco de dados possui um "Modelo" correspondente, usado para interagir com essa tabela. Os modelos permitem consultar dados em suas tabelas, além de inserir novos registros na tabela.
 
-Before getting started, be sure to configure a database connection in `config/database.php`. For more information on configuring your database, check out [the documentation](/docs/{{version}}/database#configuration).
+Antes de começar, certifique-se de configurar uma conexão com o banco de dados no `config/database.php`. Para obter mais informações sobre como configurar seu banco de dados, consulte [a documentação](/docs/{{version}}/database#configuration).
 
-<a name="defining-models"></a>
-## Defining Models
+<a name="definindo-modelos"></a>
+## Definindo modelos
 
-To get started, let's create an Eloquent model. Models typically live in the `app` directory, but you are free to place them anywhere that can be auto-loaded according to your `composer.json` file. All Eloquent models extend `Illuminate\Database\Eloquent\Model` class.
+Para começar, vamos criar um **Model** Eloquent. Os **models** geralmente ficam no diretório `app`, mas você pode colocá-los em qualquer lugar que possa ser carregado automaticamente de acordo com o arquivo `composer.json`. Todos os **models** do Eloquent estendem a classe `Illuminate\Database\Eloquent\Model`.
 
-The easiest way to create a model instance is using the `make:model` [Artisan command](/docs/{{version}}/artisan):
+A maneira mais fácil de criar uma instância do **model** é usando o comadando do artisan `make:model`:
 
-    php artisan make:model Flight
+```bash
+php artisan make:model Flight
+```
 
-If you would like to generate a [database migration](/docs/{{version}}/migrations) when you generate the model, you may use the `--migration` or `-m` option:
+Se você deseja gerar uma **migration** de banco de dados automaticamente ao gerar o modelo, pode usar a opção `--migration` ou `-m`:
 
-    php artisan make:model Flight --migration
+```bash
+php artisan make:model Flight --migration
 
-    php artisan make:model Flight -m
+php artisan make:model Flight -m
+```
 
-<a name="eloquent-model-conventions"></a>
-### Eloquent Model Conventions
+<a name="convencoes-do-modelo-eloquent"></a>
+### Convenções do modelo eloquent
 
-Now, let's look at an example `Flight` model, which we will use to retrieve and store information from our `flights` database table:
+Agora, vejamos um exemplo de **model** `Flight`, que usaremos para recuperar e armazenar informações da nossa tabela de banco de dados `Flights`:
 
-    <?php
+```php
+<?php
 
-    namespace App;
+namespace App;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-    class Flight extends Model
-    {
-        //
-    }
+class Flight extends Model
+{
+    //
+}
+```
 
-#### Table Names
+#### Nomes de tabela
 
-Note that we did not tell Eloquent which table to use for our `Flight` model. By convention, the "snake case", plural name of the class will be used as the table name unless another name is explicitly specified. So, in this case, Eloquent will assume the `Flight` model stores records in the `flights` table. You may specify a custom table by defining a `table` property on your model:
+Observe que não informamos ao Eloquent qual tabela usar para o nosso modelo `Flight`. Por convenção, o nome plural da classe será usado como o nome da tabela, a menos que outro nome seja especificado explicitamente. Portanto, neste caso, o Eloquent assumirá que o modelo `Flight` armazena registros na tabela `flights`. Você pode especificar uma tabela personalizada definindo uma propriedade `table` no seu modelo:
 
-    <?php
+```php
+<?php
 
-    namespace App;
+namespace App;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-    class Flight extends Model
-    {
-        /**
-         * The table associated with the model.
-         *
-         * @var string
-         */
-        protected $table = 'my_flights';
-    }
+class Flight extends Model
+{
+    /**
+     * Tabela associada ao modelo.
+     *
+     * @var string
+     */
+    protected $table = 'my_flights';
+}
+```
 
-#### Primary Keys
+#### Chaves primárias
 
-Eloquent will also assume that each table has a primary key column named `id`. You may define a protected `$primaryKey` property to override this convention:
+O Eloquent também assumirá que cada tabela possui uma coluna de chave primária chamada `id`. Você pode definir uma propriedade protegida `$primaryKey` para substituir esta convenção:
 
-    <?php
+```php
+<?php
 
-    namespace App;
+namespace App;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-    class Flight extends Model
-    {
-        /**
-         * The primary key associated with the table.
-         *
-         * @var string
-         */
-        protected $primaryKey = 'flight_id';
-    }
+class Flight extends Model
+{
+    /**
+     * Chave primária associada à tabela.
+     *
+     * @var string
+     */
+    protected $primaryKey = 'flight_id';
+}
+```
 
-In addition, Eloquent assumes that the primary key is an incrementing integer value, which means that by default the primary key will automatically be cast to an `int`. If you wish to use a non-incrementing or a non-numeric primary key you must set the public `$incrementing` property on your model to `false`:
+Além disso, o Eloquent assume que a chave primária é um valor inteiro incremental, o que significa que, por padrão, a chave primária será automaticamente convertida para um `int`. Se você deseja usar uma chave primária não incremental ou não numérica, defina a propriedade pública `$incrementing` no seu modelo como `false`:
 
-    <?php
+```php
+<?php
 
-    class Flight extends Model
-    {
-        /**
-         * Indicates if the IDs are auto-incrementing.
-         *
-         * @var bool
-         */
-        public $incrementing = false;
-    }
+class Flight extends Model
+{
+    /**
+     * Indica se a chave primária deve incrementar automaticamente.
+     *
+     * @var bool
+     */
+    public $incrementing = false;
+}
+```
 
-If your primary key is not an integer, you should set the protected `$keyType` property on your model to `string`:
+Se sua chave primária não for um número inteiro, você deve definir a propriedade protegida `$keyType` no seu modelo como` string`:
 
-    <?php
+```php
+<?php
 
-    class Flight extends Model
-    {
-        /**
-         * The "type" of the auto-incrementing ID.
-         *
-         * @var string
-         */
-        protected $keyType = 'string';
-    }
+class Flight extends Model
+{
+    /**
+     * O "tipo" da chave primária.
+     *
+     * @var string
+     */
+    protected $keyType = 'string';
+}
+```
 
 #### Timestamps
 
-By default, Eloquent expects `created_at` and `updated_at` columns to exist on your tables.  If you do not wish to have these columns automatically managed by Eloquent, set the `$timestamps` property on your model to `false`:
+Por padrão, o Eloquent espera que as colunas `created_at` e `updated_at` existam em suas tabelas. Se você não deseja que essas colunas sejam gerenciadas automaticamente pelo Eloquent, configure a propriedade `$timestamps` no seu modelo como `false`:
 
-    <?php
+```php
+<?php
 
-    namespace App;
+namespace App;
 
-    use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Model;
 
-    class Flight extends Model
-    {
-        /**
-         * Indicates if the model should be timestamped.
-         *
-         * @var bool
-         */
-        public $timestamps = false;
-    }
-
-If you need to customize the format of your timestamps, set the `$dateFormat` property on your model. This property determines how date attributes are stored in the database, as well as their format when the model is serialized to an array or JSON:
-
-    <?php
-
-    namespace App;
-
-    use Illuminate\Database\Eloquent\Model;
-
-    class Flight extends Model
-    {
-        /**
-         * The storage format of the model's date columns.
-         *
-         * @var string
-         */
-        protected $dateFormat = 'U';
-    }
-
-If you need to customize the names of the columns used to store the timestamps, you may set the `CREATED_AT` and `UPDATED_AT` constants in your model:
-
-    <?php
-
-    class Flight extends Model
-    {
-        const CREATED_AT = 'creation_date';
-        const UPDATED_AT = 'last_update';
-    }
-
-#### Database Connection
-
-By default, all Eloquent models will use the default database connection configured for your application. If you would like to specify a different connection for the model, use the `$connection` property:
-
-    <?php
-
-    namespace App;
-
-    use Illuminate\Database\Eloquent\Model;
-
-    class Flight extends Model
-    {
-        /**
-         * The connection name for the model.
-         *
-         * @var string
-         */
-        protected $connection = 'connection-name';
-    }
-
-<a name="default-attribute-values"></a>
-### Default Attribute Values
-
-If you would like to define the default values for some of your model's attributes, you may define an `$attributes` property on your model:
-
-    <?php
-
-    namespace App;
-
-    use Illuminate\Database\Eloquent\Model;
-
-    class Flight extends Model
-    {
-        /**
-         * The model's default values for attributes.
-         *
-         * @var array
-         */
-        protected $attributes = [
-            'delayed' => false,
-        ];
-    }
-
-<a name="retrieving-models"></a>
-## Retrieving Models
-
-Once you have created a model and [its associated database table](/docs/{{version}}/migrations#writing-migrations), you are ready to start retrieving data from your database. Think of each Eloquent model as a powerful [query builder](/docs/{{version}}/queries) allowing you to fluently query the database table associated with the model. For example:
-
-    <?php
-
-    $flights = App\Flight::all();
-
-    foreach ($flights as $flight) {
-        echo $flight->name;
-    }
-
-#### Adding Additional Constraints
-
-The Eloquent `all` method will return all of the results in the model's table. Since each Eloquent model serves as a [query builder](/docs/{{version}}/queries), you may also add constraints to queries, and then use the `get` method to retrieve the results:
-
-    $flights = App\Flight::where('active', 1)
-                   ->orderBy('name', 'desc')
-                   ->take(10)
-                   ->get();
-
-> {tip} Since Eloquent models are query builders, you should review all of the methods available on the [query builder](/docs/{{version}}/queries). You may use any of these methods in your Eloquent queries.
-
-#### Refreshing Models
-
-You can refresh models using the `fresh` and `refresh` methods. The `fresh` method will re-retrieve the model from the database. The existing model instance will not be affected:
-
-    $flight = App\Flight::where('number', 'FR 900')->first();
-
-    $freshFlight = $flight->fresh();
-
-The `refresh` method will re-hydrate the existing model using fresh data from the database. In addition, all of its loaded relationships will be refreshed as well:
-
-    $flight = App\Flight::where('number', 'FR 900')->first();
-
-    $flight->number = 'FR 456';
-
-    $flight->refresh();
-
-    $flight->number; // "FR 900"
-
-<a name="collections"></a>
-### Collections
-
-For Eloquent methods like `all` and `get` which retrieve multiple results, an instance of `Illuminate\Database\Eloquent\Collection` will be returned. The `Collection` class provides [a variety of helpful methods](/docs/{{version}}/eloquent-collections#available-methods) for working with your Eloquent results:
-
-    $flights = $flights->reject(function ($flight) {
-        return $flight->cancelled;
-    });
-
-You may also loop over the collection like an array:
-
-    foreach ($flights as $flight) {
-        echo $flight->name;
-    }
-
-<a name="chunking-results"></a>
-### Chunking Results
-
-If you need to process thousands of Eloquent records, use the `chunk` command. The `chunk` method will retrieve a "chunk" of Eloquent models, feeding them to a given `Closure` for processing. Using the `chunk` method will conserve memory when working with large result sets:
-
-    Flight::chunk(200, function ($flights) {
-        foreach ($flights as $flight) {
-            //
-        }
-    });
-
-The first argument passed to the method is the number of records you wish to receive per "chunk". The Closure passed as the second argument will be called for each chunk that is retrieved from the database. A database query will be executed to retrieve each chunk of records passed to the Closure.
-
-#### Using Cursors
-
-The `cursor` method allows you to iterate through your database records using a cursor, which will only execute a single query. When processing large amounts of data, the `cursor` method may be used to greatly reduce your memory usage:
-
-    foreach (Flight::where('foo', 'bar')->cursor() as $flight) {
-        //
-    }
-
-The `cursor` returns an `Illuminate\Support\LazyCollection` instance. [Lazy collections](/docs/{{version}}/collections#lazy-collections) allow you to use many of collection methods available on typical Laravel collections while only loading a single model into memory at a time:
-
-    $users = App\User::cursor()->filter(function ($user) {
-        return $user->id > 500;
-    });
-
-    foreach ($users as $user) {
-        echo $user->id;
-    }
-
-<a name="advanced-subqueries"></a>
-### Advanced Subqueries
-
-#### Subquery Selects
-
-Eloquent also offers advanced subquery support, which allows you to pull information from related tables in a single query. For example, let's imagine that we have a table of flight `destinations` and a table of `flights` to destinations. The `flights` table contains an `arrived_at` column which indicates when the flight arrived at the destination.
-
-Using the subquery functionality available to the `select` and `addSelect` methods, we can select all of the `destinations` and the name of the flight that most recently arrived at that destination using a single query:
-
-    use App\Destination;
-    use App\Flight;
-
-    return Destination::addSelect(['last_flight' => Flight::select('name')
-        ->whereColumn('destination_id', 'destinations.id')
-        ->orderBy('arrived_at', 'desc')
-        ->limit(1)
-    ])->get();
-
-#### Subquery Ordering
-
-In addition, the query builder's `orderBy` function supports subqueries. We may use this functionality to sort all destinations based on when the last flight arrived at that destination. Again, this may be done while executing a single query against the database:
-
-    return Destination::orderByDesc(
-        Flight::select('arrived_at')
-            ->whereColumn('destination_id', 'destinations.id')
-            ->orderBy('arrived_at', 'desc')
-            ->limit(1)
-    )->get();
-
-<a name="retrieving-single-models"></a>
-## Retrieving Single Models / Aggregates
-
-In addition to retrieving all of the records for a given table, you may also retrieve single records using `find`, `first`, or `firstWhere`. Instead of returning a collection of models, these methods return a single model instance:
-
-    // Retrieve a model by its primary key...
-    $flight = App\Flight::find(1);
-
-    // Retrieve the first model matching the query constraints...
-    $flight = App\Flight::where('active', 1)->first();
-
-    // Shorthand for retrieving the first model matching the query constraints...
-    $flight = App\Flight::firstWhere('active', 1);
-
-You may also call the `find` method with an array of primary keys, which will return a collection of the matching records:
-
-    $flights = App\Flight::find([1, 2, 3]);
-
-Sometimes you may wish to retrieve the first result of a query or perform some other action if no results are found. The `firstOr` method will return the first result that is found or, if no results are found, execute the given callback. The result of the callback will be considered the result of the `firstOr` method:
-
-    $model = App\Flight::where('legs', '>', 100)->firstOr(function () {
-            // ...
-    });
-
-The `firstOr` method also accepts an array of columns to retrieve:
-
-    $model = App\Flight::where('legs', '>', 100)
-                ->firstOr(['id', 'legs'], function () {
-                    // ...
-                });
-
-#### Not Found Exceptions
-
-Sometimes you may wish to throw an exception if a model is not found. This is particularly useful in routes or controllers. The `findOrFail` and `firstOrFail` methods will retrieve the first result of the query; however, if no result is found, a `Illuminate\Database\Eloquent\ModelNotFoundException` will be thrown:
-
-    $model = App\Flight::findOrFail(1);
-
-    $model = App\Flight::where('legs', '>', 100)->firstOrFail();
-
-If the exception is not caught, a `404` HTTP response is automatically sent back to the user. It is not necessary to write explicit checks to return `404` responses when using these methods:
-
-    Route::get('/api/flights/{id}', function ($id) {
-        return App\Flight::findOrFail($id);
-    });
-
-<a name="retrieving-aggregates"></a>
-### Retrieving Aggregates
-
-You may also use the `count`, `sum`, `max`, and other [aggregate methods](/docs/{{version}}/queries#aggregates) provided by the [query builder](/docs/{{version}}/queries). These methods return the appropriate scalar value instead of a full model instance:
-
-    $count = App\Flight::where('active', 1)->count();
-
-    $max = App\Flight::where('active', 1)->max('price');
-
-<a name="inserting-and-updating-models"></a>
-## Inserting & Updating Models
-
-<a name="inserts"></a>
-### Inserts
-
-To create a new record in the database, create a new model instance, set attributes on the model, then call the `save` method:
-
-    <?php
-
-    namespace App\Http\Controllers;
-
-    use App\Http\Controllers\Controller;
-    use App\Flight;
-    use Illuminate\Http\Request;
-
-    class FlightController extends Controller
-    {
-        /**
-         * Create a new flight instance.
-         *
-         * @param  Request  $request
-         * @return Response
-         */
-        public function store(Request $request)
-        {
-            // Validate the request...
-
-            $flight = new Flight;
-
-            $flight->name = $request->name;
-
-            $flight->save();
-        }
-    }
-
-In this example, we assign the `name` parameter from the incoming HTTP request to the `name` attribute of the `App\Flight` model instance. When we call the `save` method, a record will be inserted into the database. The `created_at` and `updated_at` timestamps will automatically be set when the `save` method is called, so there is no need to set them manually.
-
-<a name="updates"></a>
-### Updates
-
-The `save` method may also be used to update models that already exist in the database. To update a model, you should retrieve it, set any attributes you wish to update, and then call the `save` method. Again, the `updated_at` timestamp will automatically be updated, so there is no need to manually set its value:
-
-    $flight = App\Flight::find(1);
-
-    $flight->name = 'New Flight Name';
-
-    $flight->save();
-
-#### Mass Updates
-
-Updates can also be performed against any number of models that match a given query. In this example, all flights that are `active` and have a `destination` of `San Diego` will be marked as delayed:
-
-    App\Flight::where('active', 1)
-              ->where('destination', 'San Diego')
-              ->update(['delayed' => 1]);
-
-The `update` method expects an array of column and value pairs representing the columns that should be updated.
-
-> {note} When issuing a mass update via Eloquent, the `saving`, `saved`, `updating`, and `updated` model events will not be fired for the updated models. This is because the models are never actually retrieved when issuing a mass update.
-
-#### Examining Attribute Changes
-
-Eloquent provides the `isDirty`, `isClean`, and `wasChanged` methods to examine the internal state of your model and determine how its attributes have changed from when they were originally loaded.
-
-The `isDirty` method determines if any attributes have been changed since the model was loaded. You may pass a specific attribute name to determine if a particular attribute is dirty. The `isClean` method is the opposite of `isDirty` and also accepts an optional attribute argument:
-
-    $user = User::create([
-        'first_name' => 'Taylor',
-        'last_name' => 'Otwell',
-        'title' => 'Developer',
-    ]);
-
-    $user->title = 'Painter';
-
-    $user->isDirty(); // true
-    $user->isDirty('title'); // true
-    $user->isDirty('first_name'); // false
-
-    $user->isClean(); // false
-    $user->isClean('title'); // false
-    $user->isClean('first_name'); // true
-
-    $user->save();
-
-    $user->isDirty(); // false
-    $user->isClean(); // true
-
-The `wasChanged` method determines if any attributes were changed when the model was last saved within the current request cycle. You may also pass an attribute name to see if a particular attribute was changed:
-
-    $user = User::create([
-        'first_name' => 'Taylor',
-        'last_name' => 'Otwell',
-        'title' => 'Developer',
-    ]);
-
-    $user->title = 'Painter';
-    $user->save();
-
-    $user->wasChanged(); // true
-    $user->wasChanged('title'); // true
-    $user->wasChanged('first_name'); // false
-
-<a name="mass-assignment"></a>
-### Mass Assignment
-
-You may also use the `create` method to save a new model in a single line. The inserted model instance will be returned to you from the method. However, before doing so, you will need to specify either a `fillable` or `guarded` attribute on the model, as all Eloquent models protect against mass-assignment by default.
-
-A mass-assignment vulnerability occurs when a user passes an unexpected HTTP parameter through a request, and that parameter changes a column in your database you did not expect. For example, a malicious user might send an `is_admin` parameter through an HTTP request, which is then passed into your model's `create` method, allowing the user to escalate themselves to an administrator.
-
-So, to get started, you should define which model attributes you want to make mass assignable. You may do this using the `$fillable` property on the model. For example, let's make the `name` attribute of our `Flight` model mass assignable:
-
-    <?php
-
-    namespace App;
-
-    use Illuminate\Database\Eloquent\Model;
-
-    class Flight extends Model
-    {
-        /**
-         * The attributes that are mass assignable.
-         *
-         * @var array
-         */
-        protected $fillable = ['name'];
-    }
-
-Once we have made the attributes mass assignable, we can use the `create` method to insert a new record in the database. The `create` method returns the saved model instance:
-
-    $flight = App\Flight::create(['name' => 'Flight 10']);
-
-If you already have a model instance, you may use the `fill` method to populate it with an array of attributes:
-
-    $flight->fill(['name' => 'Flight 22']);
-
-#### Guarding Attributes
-
-While `$fillable` serves as a "white list" of attributes that should be mass assignable, you may also choose to use `$guarded`. The `$guarded` property should contain an array of attributes that you do not want to be mass assignable. All other attributes not in the array will be mass assignable. So, `$guarded` functions like a "black list". Importantly, you should use either `$fillable` or `$guarded` - not both. In the example below, all attributes **except for `price`** will be mass assignable:
-
-    <?php
-
-    namespace App;
-
-    use Illuminate\Database\Eloquent\Model;
-
-    class Flight extends Model
-    {
-        /**
-         * The attributes that aren't mass assignable.
-         *
-         * @var array
-         */
-        protected $guarded = ['price'];
-    }
-
-If you would like to make all attributes mass assignable, you may define the `$guarded` property as an empty array:
-
+class Flight extends Model
+{
     /**
-     * The attributes that aren't mass assignable.
+     * Indica se o modelo deve ter as colunas "created_at" e updated_at.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
+}
+```
+
+Se você precisar personalizar o formato de seus registros de data e hora, defina a propriedade `$dateFormat` no seu modelo. Essa propriedade determina como os atributos de data são armazenados no banco de dados, bem como seu formato quando o modelo é serializado para uma matriz ou JSON:
+
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Flight extends Model
+{
+    /**
+     * Formato de armazenamento das colunas de data do modelo.
+     *
+     * @var string
+     */
+    protected $dateFormat = 'U';
+}
+```
+
+Se você precisar personalizar os nomes das colunas `created_at` e `updated_at`, você pode definir as constantes `CREATED_AT` e `UPDATED_AT` no seu modelo:
+
+```php
+<?php
+
+class Flight extends Model
+{
+    const CREATED_AT = 'creation_date';
+    const UPDATED_AT = 'last_update';
+}
+```
+
+#### Conexão com Banco de Dados
+
+Por padrão, todos os modelos do Eloquent usarão a conexão de banco de dados padrão configurada para seu aplicativo. Se você deseja especificar uma conexão diferente para o modelo, use a propriedade `$connection`:
+
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Flight extends Model
+{
+    /**
+     * Nome da conexão com o banco de dados para o modelo.
+     *
+     * @var string
+     */
+    protected $connection = 'connection-name';
+}
+```
+
+<a name="valores-padrao-para-atributos"></a>
+### Valores padrão para atributos
+
+Se você deseja definir os valores padrão para alguns dos atributos do seu modelo, você pode definir uma propriedade `$attributes` no seu modelo:
+
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Flight extends Model
+{
+    /**
+     * Valores padrão para atributos do modelo.
      *
      * @var array
      */
-    protected $guarded = [];
+    protected $attributes = [
+        'delayed' => false,
+    ];
+}
+```
 
-<a name="other-creation-methods"></a>
-### Other Creation Methods
+<a name="recuperando-modelos"></a>
+## Recuperando modelos
 
-#### `firstOrCreate`/ `firstOrNew`
+Depois de criar um modelo e sua tabela de banco de dados associada, você estará pronto para começar a recuperar dados do seu banco de dados. Pense em cada modelo Eloquent como um poderoso construtor de consultas, permitindo consultar fluentemente a tabela de banco de dados associada ao modelo. Por exemplo:
 
-There are two other methods you may use to create models by mass assigning attributes: `firstOrCreate` and `firstOrNew`. The `firstOrCreate` method will attempt to locate a database record using the given column / value pairs. If the model can not be found in the database, a record will be inserted with the attributes from the first parameter, along with those in the optional second parameter.
+```php
+<?php
 
-The `firstOrNew` method, like `firstOrCreate` will attempt to locate a record in the database matching the given attributes. However, if a model is not found, a new model instance will be returned. Note that the model returned by `firstOrNew` has not yet been persisted to the database. You will need to call `save` manually to persist it:
+$flights = App\Flight::all();
 
-    // Retrieve flight by name, or create it if it doesn't exist...
-    $flight = App\Flight::firstOrCreate(['name' => 'Flight 10']);
+foreach ($flights as $flight) {
+    echo $flight->name;
+}
+```
 
-    // Retrieve flight by name, or create it with the name, delayed, and arrival_time attributes...
-    $flight = App\Flight::firstOrCreate(
-        ['name' => 'Flight 10'],
-        ['delayed' => 1, 'arrival_time' => '11:30']
-    );
+#### Adicionando restrições
 
-    // Retrieve by name, or instantiate...
-    $flight = App\Flight::firstOrNew(['name' => 'Flight 10']);
+O método do Eloquent `all` retornará todos os resultados da tabela do modelo. Como cada modelo Eloquent serve como um construtor de consultas, você também pode adicionar restrições às consultas e, em seguida, usar o método `get` para recuperar os resultados:
 
-    // Retrieve by name, or instantiate with the name, delayed, and arrival_time attributes...
-    $flight = App\Flight::firstOrNew(
-        ['name' => 'Flight 10'],
-        ['delayed' => 1, 'arrival_time' => '11:30']
-    );
+```php
+$flights = App\Flight::where('active', 1)
+                ->orderBy('name', 'desc')
+                ->take(10)
+                ->get();
+```
+
+> Como os modelos Eloquent são construtores de consultas, revise todos os métodos disponíveis no construtor de consultas. Você pode usar qualquer um desses métodos em suas consultas do Eloquent.
+
+#### Atualizando modelos
+
+Você pode atualizar modelos usando os métodos `fresh` e `refresh`. O método `fresh` recuperará o modelo do banco de dados. A instância do modelo existente não será afetada:
+
+```php
+$flight = App\Flight::where('number', 'FR 900')->first();
+
+$freshFlight = $flight->fresh();
+```
+
+O método `refresh` irá reidratar o modelo existente usando novos dados do banco de dados. Além disso, todos os seus relacionamentos carregados também serão atualizados:
+
+```php
+$flight = App\Flight::where('number', 'FR 900')->first();
+
+$flight->number = 'FR 456';
+
+$flight->refresh();
+
+$flight->number; // "FR 900"
+```
+
+<a name="colecoes"></a>
+### Coleções
+
+Para métodos Eloquent como `all` e `get` que recuperam vários resultados, uma instância de `Illuminate\Database\Eloquent\Collection` será retornada. A classe `Collection` fornece uma variedade de métodos úteis para trabalhar com seus resultados do Eloquent:
+
+```php
+$flights = $flights->reject(function ($flight) {
+    return $flight->cancelled;
+});
+```
+
+Você também pode fazer um loop sobre a coleção como uma matriz:
+
+```php
+foreach ($flights as $flight) {
+    echo $flight->name;
+}
+```
+
+<a name="resultados-com-chunking"></a>
+### Resultados com chunking
+
+Se você precisar processar milhares de registros Eloquent, use o comando `chunk`. O método `chunk` recuperará um "chunk" dos modelos Eloquent, alimentando-os com uma determinada `Closure` para processamento. O uso do método `chunk` economizará memória ao trabalhar com grandes conjuntos de resultados:
+
+```php
+Flight::chunk(200, function ($flights) {
+    foreach ($flights as $flight) {
+        //
+    }
+});
+```
+
+O primeiro argumento passado para o método é o número de registros que você deseja receber por "bloco". A "Closure" passada como o segundo argumento será chamada para cada registro que é recuperado do banco de dados. Uma consulta ao banco de dados será executada para recuperar cada parte dos registros transmitidos ao Closure.
+
+#### Usando cursors
+
+O método `cursor` permite que você repita os registros do banco de dados usando um cursor, que executará apenas uma única consulta. Ao processar grandes quantidades de dados, o método `cursor` pode ser usado para reduzir bastante o uso de memória:
+
+```php
+foreach (Flight::where('foo', 'bar')->cursor() as $flight) {
+    //
+}
+```
+
+O `cursor` retorna uma instância de `Illuminate\Support\LazyCollection`. As **"lazy collections"** permitem que você use muitos dos métodos de coleção disponíveis nas coleções típicas do Laravel, enquanto carrega apenas um modelo na memória por vez:
+
+```php
+$users = App\User::cursor()->filter(function ($user) {
+    return $user->id > 500;
+});
+
+foreach ($users as $user) {
+    echo $user->id;
+}
+```
+
+<a name="subqueries-avancadas"></a>
+### Subqueries avançadas
+
+#### Subconsulta
+
+O Eloquent também oferece suporte avançado à subconsulta, que permite extrair informações de tabelas relacionadas em uma única consulta. Por exemplo, vamos imaginar que temos uma tabela `destinations` de voo e uma tabela de `flights` para destinos. A tabela `flights` contém uma coluna `arrived_at` que indica quando o vôo chegou ao destino.
+
+Usando a funcionalidade de subconsulta disponível para os métodos `select` e `addSelect`, podemos selecionar todos os `destinations` e o nome do voo que chegou mais recentemente a esse destino usando uma única consulta:
+
+```php
+use App\Destination;
+use App\Flight;
+
+return Destination::addSelect(['last_flight' => Flight::select('name')
+    ->whereColumn('destination_id', 'destinations.id')
+    ->orderBy('arrived_at', 'desc')
+    ->limit(1)
+])->get();
+```
+
+#### Ordenação de Subconsulta
+
+Além disso, a função `orderBy` do construtor de consultas suporta subconsultas. Podemos usar essa funcionalidade para classificar todos os destinos com base em quando o último voo chegou a esse destino. Novamente, isso pode ser feito durante a execução de uma única consulta no banco de dados:
+
+```php
+return Destination::orderByDesc(
+    Flight::select('arrived_at')
+        ->whereColumn('destination_id', 'destinations.id')
+        ->orderBy('arrived_at', 'desc')
+        ->limit(1)
+)->get();
+```
+
+<a name="recuperando-modelos-unicos"></a>
+## Recuperando modelos únicos / agregados
+
+Além de recuperar todos os registros de uma determinada tabela, você também pode recuperar registros únicos usando `find`, `first` ou `firstWhere`. Em vez de retornar uma coleção de modelos, esses métodos retornam uma única instância de modelo:
+
+```php
+// Recupere um modelo por sua chave primária...
+$flight = App\Flight::find(1);
+
+// Recupere o primeiro modelo que corresponde às restrições de consulta...
+$flight = App\Flight::where('active', 1)->first();
+
+// Atalho para recuperar o primeiro modelo que corresponde às restrições de consulta...
+$flight = App\Flight::firstWhere('active', 1);
+```
+
+Você também pode chamar o método `find` com uma matriz de chaves primárias, que retornará uma coleção dos registros correspondentes:
+
+```php
+$flights = App\Flight::find([1, 2, 3]);
+```
+
+Às vezes, você pode recuperar o primeiro resultado de uma consulta ou executar alguma outra ação se nenhum resultado for encontrado. O método `firstOr` retornará o primeiro resultado encontrado ou, se nenhum resultado for encontrado, executará o retorno de chamada fornecido. O resultado do retorno de chamada será considerado o resultado do método `firstOr`:
+
+```php
+$model = App\Flight::where('legs', '>', 100)->firstOr(function () {
+        // ...
+});
+```
+
+O método `firstOr` também aceita uma matriz de colunas para recuperar:
+
+```php
+$model = App\Flight::where('legs', '>', 100)
+            ->firstOr(['id', 'legs'], function () {
+                // ...
+            });
+```
+
+#### Not Found Exceptions
+
+Às vezes, você pode querer lançar uma exceção se um modelo não for encontrado. Isso é particularmente útil em rotas ou controladores. Os métodos `findOrFail` e `firstOrFail` recuperam o primeiro resultado da consulta, contudo, se nenhum resultado for encontrado, uma `Illuminate\Database\Eloquent\ModelNotFoundException` será lançada:
+
+```php
+$model = App\Flight::findOrFail(1);
+
+$model = App\Flight::where('legs', '>', 100)->firstOrFail();
+```
+
+Se a exceção não for capturada, uma resposta HTTP `404` é automaticamente enviada de volta ao usuário. Não é necessário escrever verificações explícitas para retornar respostas `404` ao usar estes métodos:
+
+```php
+Route::get('/api/flights/{id}', function ($id) {
+    return App\Flight::findOrFail($id);
+});
+```
+
+<a name="recuperando-agregados"></a>
+### Recuperando agregados
+
+Você também pode usar os métodos `count`, `sum`, `max` e outros métodos agregados fornecidos pelo construtor de consultas. Esses métodos retornam o valor escalar apropriado em vez de uma instância de modelo completa:
+
+```php
+$count = App\Flight::where('active', 1)->count();
+
+$max = App\Flight::where('active', 1)->max('price');
+```
+
+<a name="inserindo-e-atualizando-modelos"></a>
+## Inserindo e atualizando modelos
+
+<a name="inserindo"></a>
+### Inserindo
+
+Para criar um novo registro no banco de dados, crie uma nova instância de modelo, defina atributos no modelo e chame o método `save`:
+
+```php
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Flight;
+use Illuminate\Http\Request;
+
+class FlightController extends Controller
+{
+    /**
+     * Crie uma nova instância de vôo.
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function store(Request $request)
+    {
+        // Valide a requisição...
+
+        $flight = new Flight;
+
+        $flight->name = $request->name;
+
+        $flight->save();
+    }
+}
+```
+
+Neste exemplo, atribuímos o parâmetro `name` da requisição HTTP no atributo `name` da instância do modelo `App\Flight`. Quando chamamos o método `save`, um registro será inserido no banco de dados. Os timestamps de data e hora `created_at` e `updated_at` serão configurados automaticamente quando o método `save` for chamado, portanto não há necessidade de configurá-los manualmente.
+
+<a name="atualizando"></a>
+### Atualizando
+
+O método `save` também pode ser usado para atualizar modelos que já existem no banco de dados. Para atualizar um modelo, você deve recuperá-lo, definir os atributos que deseja atualizar e, em seguida, chamar o método `save`. Novamente, o registro de data e hora `updated_at` será atualizado automaticamente, portanto não há necessidade de definir manualmente seu valor:
+
+```php
+$flight = App\Flight::find(1);
+
+$flight->name = 'New Flight Name';
+
+$flight->save();
+```
+
+#### Atualizações em massa
+
+As atualizações também podem ser realizadas em qualquer número de modelos que correspondam a uma determinada consulta. Neste exemplo, todos os voos que estão `active` e têm um `destination` de `San Diego` serão marcados como atrasados:
+
+```php
+App\Flight::where('active', 1)
+            ->where('destination', 'San Diego')
+            ->update(['delayed' => 1]);
+```
+
+O método `update` espera uma matriz de pares de colunas e valores representando as colunas que devem ser atualizadas.
+
+> Ao emitir uma atualização em massa via Eloquent, os eventos do modelo `saving`, `saved`, `updating` e `updated` não serão acionados para os modelos atualizados. Isso ocorre porque os modelos nunca são realmente recuperados ao emitir uma atualização em massa.
+
+#### Examinando alterações de atributo
+
+O Eloquent fornece os métodos `isDirty`, `isClean` e `wasChanged` para examinar o estado interno do seu modelo e determinar como seus atributos foram alterados quando foram carregados originalmente.
+
+O método `isDirty` determina se algum atributo foi alterado desde que o modelo foi carregado. Você pode passar um nome de atributo específico para determinar se um atributo específico está sujo. O método `isClean` é o oposto de `isDirty` e também aceita um argumento de atributo opcional:
+
+```php
+$user = User::create([
+    'first_name' => 'Taylor',
+    'last_name' => 'Otwell',
+    'title' => 'Developer',
+]);
+
+$user->title = 'Painter';
+
+$user->isDirty(); // true
+$user->isDirty('title'); // true
+$user->isDirty('first_name'); // false
+
+$user->isClean(); // false
+$user->isClean('title'); // false
+$user->isClean('first_name'); // true
+
+$user->save();
+
+$user->isDirty(); // false
+$user->isClean(); // true
+```
+
+O método `wasChanged` determina se algum atributo foi alterado quando o modelo foi salvo pela última vez dentro do ciclo de solicitação atual. Você também pode passar um nome de atributo para ver se um atributo específico foi alterado:
+
+```php
+$user = User::create([
+    'first_name' => 'Taylor',
+    'last_name' => 'Otwell',
+    'title' => 'Developer',
+]);
+
+$user->title = 'Painter';
+$user->save();
+
+$user->wasChanged(); // true
+$user->wasChanged('title'); // true
+$user->wasChanged('first_name'); // false
+```
+
+<a name="atribuicao-em-massa"></a>
+### Atribuição em massa
+
+Você também pode usar o método `create` para salvar um novo modelo em uma única linha. A instância do modelo inserido será retornada a você. No entanto, antes de fazer isso, você precisará especificar um atributo `fillable` ou `guarded` no modelo, pois todos os modelos Eloquent protegem contra atribuição em massa por padrão.
+
+Uma vulnerabilidade de atribuição em massa ocorre quando um usuário passa um parâmetro HTTP inesperado por meio de uma solicitação e esse parâmetro altera uma coluna em seu banco de dados que você não esperava. Por exemplo, um usuário mal-intencionado pode enviar um parâmetro `is_admin` por meio de uma solicitação HTTP, que é passada ao método `create` do seu modelo, permitindo que o usuário se encaminhe para um administrador.
+
+Portanto, para começar, defina quais atributos do modelo você deseja permitir a atribuição em massa. Você pode fazer isso usando a propriedade `$fillable` no modelo. Por exemplo, vamos atribuir o atributo `name` do modelo `Flight`:
+
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Flight extends Model
+{
+    /**
+     * Os atributos que são atribuíveis em massa.
+     *
+     * @var array
+     */
+    protected $fillable = ['name'];
+}
+```
+
+Depois de termos tornado os atributos atribuíveis em massa, podemos usar o método `create` para inserir um novo registro no banco de dados. O método `create` retorna a instância do modelo salvo:
+
+```php
+$flight = App\Flight::create(['name' => 'Flight 10']);
+```
+
+Se você já possui uma instância de modelo, pode usar o método `fill` para preenchê-lo com uma matriz de atributos:
+
+```php
+$flight->fill(['name' => 'Flight 22']);
+```
+
+#### Atributos de proteção
+
+Enquanto o `$fillable` serve como uma "lista branca" de atributos que devem ser atribuídos em massa, você também pode optar por usar o `$guarded`. A propriedade `$guarded` deve conter uma matriz de atributos que você não deseja atribuir em massa. Todos os outros atributos que não estão na matriz serão atribuíveis em massa. Portanto, `$guarded` funciona como uma "lista negra". Importante, você deve usar `$fillable` ou `$guarded` - não os dois. No exemplo abaixo, todos os atributos **com exceção de `price`**, poderão ser atribuídos em massa:
+
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Flight extends Model
+{
+    /**
+     * Os atributos que não são atribuíveis em massa.
+     *
+     * @var array
+     */
+    protected $guarded = ['price'];
+}
+```
+
+Se você deseja tornar todos os atributos atribuíveis em massa, defina a propriedade `$guarded` como uma matriz vazia:
+
+```php
+/**
+ * Os atributos que não são atribuíveis em massa.
+ *
+ * @var array
+ */
+protected $guarded = [];
+```
+
+<a name="outros-metodos-de-criacao"></a>
+### Outros métodos de criação
+
+#### `firstOrCreate` / `firstOrNew`
+
+Existem dois outros métodos que você pode usar para criar modelos atribuindo atributos em massa: `firstOrCreate` e `firstOrNew`. O método `firstOrCreate` tentará localizar um registro do banco de dados usando os pares de coluna / valor fornecidos. Se o modelo não puder ser encontrado no banco de dados, um registro será inserido com os atributos do primeiro parâmetro, juntamente com os do segundo parâmetro opcional.
+
+O método `firstOrNew`, como `firstOrCreate`, tentará localizar um registro no banco de dados que corresponda aos atributos fornecidos. Contudo, se um modelo não for encontrado, uma nova instância do modelo será retornada. Observe que o modelo retornado por `firstOrNew` ainda não foi mantido no banco de dados. Você precisará chamar `save` manualmente para persistir:
+
+```php
+// Recupere o vôo pelo nome ou crie-o se ele não existir...
+$flight = App\Flight::firstOrCreate(['name' => 'Flight 10']);
+
+// Recupere o vôo pelo nome ou crie-o com os atributos name, delayed e arrival_time...
+$flight = App\Flight::firstOrCreate(
+    ['name' => 'Flight 10'],
+    ['delayed' => 1, 'arrival_time' => '11:30']
+);
+
+// Recupera o vôo pelo nome ou instancia um novo objeto...
+$flight = App\Flight::firstOrNew(['name' => 'Flight 10']);
+
+// Recupera o vôo pelo nome ou instancia com os atributos name, delayed, e arrival_time ...
+$flight = App\Flight::firstOrNew(
+    ['name' => 'Flight 10'],
+    ['delayed' => 1, 'arrival_time' => '11:30']
+);
+```
 
 #### `updateOrCreate`
 
-You may also come across situations where you want to update an existing model or create a new model if none exists. Laravel provides an `updateOrCreate` method to do this in one step. Like the `firstOrCreate` method, `updateOrCreate` persists the model, so there's no need to call `save()`:
+Você também pode encontrar situações em que deseja atualizar um modelo existente ou criar um novo modelo, se não houver nenhum. O Laravel fornece o método `updateOrCreate` para fazer isso em uma única etapa. Como o método `firstOrCreate`, `updateOrCreate` persiste no modelo, portanto não há necessidade de chamar o método `save()`:
 
-    // If there's a flight from Oakland to San Diego, set the price to $99.
-    // If no matching model exists, create one.
-    $flight = App\Flight::updateOrCreate(
-        ['departure' => 'Oakland', 'destination' => 'San Diego'],
-        ['price' => 99, 'discounted' => 1]
-    );
+```php
+// Se houver um vôo de Oakland para San Diego, defina o preço para $99.
+// Se não existir um modelo correspondente, crie um.
+$flight = App\Flight::updateOrCreate(
+    ['departure' => 'Oakland', 'destination' => 'San Diego'],
+    ['price' => 99, 'discounted' => 1]
+);
+```
 
-<a name="deleting-models"></a>
-## Deleting Models
+<a name="excluindo-modelos"></a>
+## Excluindo Modelos
 
-To delete a model, call the `delete` method on a model instance:
+Para excluir um modelo, chame o método `delete` em uma instância do modelo:
 
-    $flight = App\Flight::find(1);
+```php
+$flight = App\Flight::find(1);
 
-    $flight->delete();
+$flight->delete();
+```
 
-#### Deleting An Existing Model By Key
+#### Excluindo um modelo existente pela chave primária
 
-In the example above, we are retrieving the model from the database before calling the `delete` method. However, if you know the primary key of the model, you may delete the model without retrieving it by calling the `destroy` method.  In addition to a single primary key as its argument, the `destroy` method will accept multiple primary keys, an array of primary keys, or a [collection](/docs/{{version}}/collections) of primary keys:
+No exemplo acima, estamos recuperando o modelo do banco de dados antes de chamar o método `delete`. No entanto, se você conhece a chave primária do modelo, você pode excluí-lo sem recuperá-lo chamando o método `destroy`.  Além de uma única chave primária como argumento, o método `destroy` aceita várias chaves primárias, uma matriz de chaves primárias ou uma coleção de chaves primárias:
 
-    App\Flight::destroy(1);
+```php
+App\Flight::destroy(1);
 
-    App\Flight::destroy(1, 2, 3);
+App\Flight::destroy(1, 2, 3);
 
-    App\Flight::destroy([1, 2, 3]);
+App\Flight::destroy([1, 2, 3]);
 
-    App\Flight::destroy(collect([1, 2, 3]));
+App\Flight::destroy(collect([1, 2, 3]));
+```
 
-#### Deleting Models By Query
+#### Excluindo modelos por consulta
 
-You can also run a delete statement on a set of models. In this example, we will delete all flights that are marked as inactive. Like mass updates, mass deletes will not fire any model events for the models that are deleted:
+Você também pode executar uma instrução de exclusão em um conjunto de modelos. Neste exemplo, excluiremos todos os vôos marcados como inativos. Como as atualizações em massa, as exclusões em massa não acionarão nenhum evento de modelo para os modelos excluídos:
 
-    $deletedRows = App\Flight::where('active', 0)->delete();
+```php
+$deletedRows = App\Flight::where('active', 0)->delete();
+```
 
-> {note} When executing a mass delete statement via Eloquent, the `deleting` and `deleted` model events will not be fired for the deleted models. This is because the models are never actually retrieved when executing the delete statement.
+> Ao executar uma instrução de exclusão em massa via Eloquent, os eventos do modelo `deleting` e `deleted` não serão disparados para os modelos excluídos. Isso ocorre porque os modelos nunca são realmente recuperados ao executar a instrução delete.
 
 <a name="soft-deleting"></a>
 ### Soft Deleting
 
-In addition to actually removing records from your database, Eloquent can also "soft delete" models. When models are soft deleted, they are not actually removed from your database. Instead, a `deleted_at` attribute is set on the model and inserted into the database. If a model has a non-null `deleted_at` value, the model has been soft deleted. To enable soft deletes for a model, use the `Illuminate\Database\Eloquent\SoftDeletes` trait on the model:
+Além de remover os registros do banco de dados, o Eloquent pode executar o "soft delete" nos modelos. Quando os modelos são excluídos, eles não são realmente removidos do seu banco de dados. Em vez disso, um atributo `deleted_at` é definido no modelo e inserido no banco de dados. Se um modelo tiver um valor não nulo em `deleted_at`, o modelo será excluído temporariamente. Para ativar "soft delete" para um modelo, use o atributo `Illuminate\Database\Eloquent\SoftDeletes` no modelo:
 
-    <?php
+```php
+<?php
 
-    namespace App;
+namespace App;
 
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-    class Flight extends Model
-    {
-        use SoftDeletes;
-    }
+class Flight extends Model
+{
+    use SoftDeletes;
+}
+```
 
-> {tip} The `SoftDeletes` trait will automatically cast the `deleted_at` attribute to a `DateTime` / `Carbon` instance for you.
+> A característica `SoftDeletes` converterá automaticamente o atributo` deleted_at` em uma instância de `DateTime` / `Carbon` para você.
 
-You should also add the `deleted_at` column to your database table. The Laravel [schema builder](/docs/{{version}}/migrations) contains a helper method to create this column:
+Você também deve adicionar a coluna `deleted_at` à sua tabela de banco de dados. O construtor de esquema do Laravel contém um método auxiliar para criar esta coluna:
 
-    Schema::table('flights', function (Blueprint $table) {
-        $table->softDeletes();
-    });
+```php
+// Migration
+Schema::table('flights', function (Blueprint $table) {
+    $table->softDeletes();
+});
+```
 
-Now, when you call the `delete` method on the model, the `deleted_at` column will be set to the current date and time. And, when querying a model that uses soft deletes, the soft deleted models will automatically be excluded from all query results.
+Agora, quando você chama o método `delete` no modelo, a coluna `deleted_at` será definida para a data e hora atuais. E, ao consultar um modelo que usa "soft deletes", os modelos excluídos serão automaticamente excluídos de todos os resultados da consulta.
 
-To determine if a given model instance has been soft deleted, use the `trashed` method:
+Para determinar se uma determinada instância de modelo foi excluída com "soft deletes", use o método `trashed`:
 
-    if ($flight->trashed()) {
-        //
-    }
+```php
+if ($flight->trashed()) {
+    //
+}
+```
 
-<a name="querying-soft-deleted-models"></a>
-### Querying Soft Deleted Models
+<a name="consultando-soft-delete"></a>
+### Consultando "soft delete"
 
-#### Including Soft Deleted Models
+#### Consulta incluindo modelos excluídos por "soft delete"
 
-As noted above, soft deleted models will automatically be excluded from query results. However, you may force soft deleted models to appear in a result set using the `withTrashed` method on the query:
+Como observado acima, os modelos marcados com "soft delete" serão excluídos automaticamente dos resultados da consulta. Contudo, você pode forçar modelos excluídos a serem exibidos em um conjunto de resultados usando o método `withTrashed` na consulta:
 
-    $flights = App\Flight::withTrashed()
-                    ->where('account_id', 1)
-                    ->get();
+```php
+$flights = App\Flight::withTrashed()
+                ->where('account_id', 1)
+                ->get();
+```
 
-The `withTrashed` method may also be used on a [relationship](/docs/{{version}}/eloquent-relationships) query:
+O método `withTrashed` também pode ser usado em uma consulta de relacionamento:
 
-    $flight->history()->withTrashed()->get();
+```php
+$flight->history()->withTrashed()->get();
+```
 
-#### Retrieving Only Soft Deleted Models
+#### Recuperando apenas registros marcado com "soft delete"
 
-The `onlyTrashed` method will retrieve **only** soft deleted models:
+O método `onlyTrashed` recuperará **apenas** modelos excluídos por "soft delete":
 
-    $flights = App\Flight::onlyTrashed()
-                    ->where('airline_id', 1)
-                    ->get();
+```php
+$flights = App\Flight::onlyTrashed()
+                ->where('airline_id', 1)
+                ->get();
+```
 
-#### Restoring Soft Deleted Models
+#### Restaurando modelos excluídos por "soft delete"
 
-Sometimes you may wish to "un-delete" a soft deleted model. To restore a soft deleted model into an active state, use the `restore` method on a model instance:
+Às vezes, você pode querer "cancelar a exclusão" de um modelo excluído. Para restaurar um modelo excluído temporariamente para um estado ativo, use o método `restore` em uma instância de modelo:
 
-    $flight->restore();
+```php
+$flight->restore();
+```
 
-You may also use the `restore` method in a query to quickly restore multiple models. Again, like other "mass" operations, this will not fire any model events for the models that are restored:
+Você também pode usar o método `restore` em uma consulta para restaurar rapidamente vários modelos. Novamente, como outras operações de "massa", isso não acionará nenhum evento de modelo para os modelos restaurados:
 
-    App\Flight::withTrashed()
-            ->where('airline_id', 1)
-            ->restore();
+```php
+App\Flight::withTrashed()
+        ->where('airline_id', 1)
+        ->restore();
+```
 
-Like the `withTrashed` method, the `restore` method may also be used on [relationships](/docs/{{version}}/eloquent-relationships):
+Como o método `withTrashed`, o método `restore` também pode ser usado em relacionamentos:
 
-    $flight->history()->restore();
+```php
+$flight->history()->restore();
+```
 
-#### Permanently Deleting Models
+#### Exclusão permanente de modelos
 
-Sometimes you may need to truly remove a model from your database. To permanently remove a soft deleted model from the database, use the `forceDelete` method:
+Às vezes, pode ser necessário remover permanentemente um modelo do seu banco de dados. Para remover permanentemente um modelo excluído do banco de dados, use o método `forceDelete`:
 
-    // Force deleting a single model instance...
-    $flight->forceDelete();
+```php
+// Força a exclusão de uma instância de modelo único...
+$flight->forceDelete();
 
-    // Force deleting all related models...
-    $flight->history()->forceDelete();
+// Força a exclusão de todos os modelos relacionados...
+$flight->history()->forceDelete();
+```
 
-<a name="replicating-models"></a>
-## Replicating Models
+<a name="replicando-modelos"></a>
+## Replicando modelos
 
-You may create an unsaved copy of a model instance using the `replicate` method. This is particularly useful when you have model instances that share many of the same attributes:
+Você pode criar uma cópia não salva de uma instância de modelo usando o método `replicate`. Isso é particularmente útil quando você tem instâncias de modelo que compartilham muitos dos mesmos atributos:
 
-    $shipping = App\Address::create([
-        'type' => 'shipping',
-        'line_1' => '123 Example Street',
-        'city' => 'Victorville',
-        'state' => 'CA',
-        'postcode' => '90001',
-    ]);
+```php
+$shipping = App\Address::create([
+    'type' => 'shipping',
+    'line_1' => '123 Example Street',
+    'city' => 'Victorville',
+    'state' => 'CA',
+    'postcode' => '90001',
+]);
 
-    $billing = $shipping->replicate()->fill([
-        'type' => 'billing'
-    ]);
+$billing = $shipping->replicate()->fill([
+    'type' => 'billing'
+]);
 
-    $billing->save();
+$billing->save();
+```
 
 <a name="query-scopes"></a>
 ## Query Scopes
 
-<a name="global-scopes"></a>
-### Global Scopes
+<a name="escopos-globais"></a>
+### Escopos globais
 
-Global scopes allow you to add constraints to all queries for a given model. Laravel's own [soft delete](#soft-deleting) functionality utilizes global scopes to only pull "non-deleted" models from the database. Writing your own global scopes can provide a convenient, easy way to make sure every query for a given model receives certain constraints.
+Os escopos globais permitem adicionar restrições a todas as consultas para um determinado modelo. A própria funcionalidade **soft delete** do Laravel utiliza escopos globais para extrair apenas modelos "não excluídos" do banco de dados. Escrever seus próprios escopos globais pode fornecer uma maneira conveniente e fácil de garantir que todas as consultas de um determinado modelo recebam certas restrições.
 
-#### Writing Global Scopes
+#### Escrevendo Escopos globais
 
-Writing a global scope is simple. Define a class that implements the `Illuminate\Database\Eloquent\Scope` interface. This interface requires you to implement one method: `apply`. The `apply` method may add `where` constraints to the query as needed:
+Escrever um escopo global é simples. Defina uma classe que implemente a interface `Illuminate\Database\Eloquent\Scope`. Esta interface requer que você implemente um método: `apply`. O método `apply` pode adicionar restrições `where` à consulta, conforme necessário:
 
-    <?php
+```php
+<?php
 
-    namespace App\Scopes;
+namespace App\Scopes;
 
-    use Illuminate\Database\Eloquent\Builder;
-    use Illuminate\Database\Eloquent\Model;
-    use Illuminate\Database\Eloquent\Scope;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Scope;
 
-    class AgeScope implements Scope
+class AgeScope implements Scope
+{
+    /**
+     * Aplique o escopo a um determinado construtor de consultas Eloquent.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $builder
+     * @param  \Illuminate\Database\Eloquent\Model  $model
+     * @return void
+     */
+    public function apply(Builder $builder, Model $model)
     {
-        /**
-         * Apply the scope to a given Eloquent query builder.
-         *
-         * @param  \Illuminate\Database\Eloquent\Builder  $builder
-         * @param  \Illuminate\Database\Eloquent\Model  $model
-         * @return void
-         */
-        public function apply(Builder $builder, Model $model)
-        {
+        $builder->where('age', '>', 200);
+    }
+}
+```
+
+> Se seu escopo global estiver adicionando colunas à cláusula select da consulta, você deve usar o método `addSelect` em vez de `select`. Isso impedirá a substituição não intencional da cláusula de seleção existente da consulta.
+
+#### Aplicando Escopos globais
+
+Para atribuir um escopo global a um modelo, você deve substituir o método `boot` de um determinado modelo e usar o método `addGlobalScope`:
+
+```php
+<?php
+
+namespace App;
+
+use App\Scopes\AgeScope;
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model
+{
+    /**
+     * Método de inicialização do modelo.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope(new AgeScope);
+    }
+}
+```
+
+Após adicionar o escopo, uma consulta ao `User::all()` produzirá o seguinte SQL:
+
+```sql
+select * from `users` where `age` > 200
+```
+
+#### Escopos Globais Anônimos
+
+O Eloquent também permite definir escopos globais usando Closures, o que é particularmente útil para escopos simples que não justificam uma classe separada:
+
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model
+{
+    /**
+     * Método de inicialização do modelo.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::addGlobalScope('age', function (Builder $builder) {
             $builder->where('age', '>', 200);
-        }
+        });
     }
+}
+```
 
-> {tip} If your global scope is adding columns to the select clause of the query, you should use the `addSelect` method instead of `select`. This will prevent the unintentional replacement of the query's existing select clause.
+#### Removendo escopos globais
 
-#### Applying Global Scopes
+Se você deseja remover um escopo global para uma determinada consulta, você pode usar o método `withoutGlobalScope`. O método aceita o nome da classe do escopo global como seu único argumento:
 
-To assign a global scope to a model, you should override a given model's `boot` method and use the `addGlobalScope` method:
+```php
+User::withoutGlobalScope(AgeScope::class)->get();
+```
 
-    <?php
+Ou, se você definiu o escopo global usando uma **closure**:
 
-    namespace App;
+```php
+User::withoutGlobalScope('age')->get();
+```
 
-    use App\Scopes\AgeScope;
-    use Illuminate\Database\Eloquent\Model;
+Se você deseja remover vários ou mesmo todos os escopos globais, pode usar o método `withoutGlobalScopes`:
 
-    class User extends Model
+```php
+// Remove todos os escopos globais...
+User::withoutGlobalScopes()->get();
+
+// Remove alguns dos escopos globais...
+User::withoutGlobalScopes([
+    FirstScope::class, SecondScope::class
+])->get();
+```
+
+<a name="escopos-locais"></a>
+### Escopos Locais
+
+Os escopos locais permitem definir conjuntos comuns de restrições que você pode reutilizar facilmente em todo o aplicativo. Por exemplo, pode ser necessário recuperar com frequência todos os usuários considerados populares. Para definir um escopo, prefixe um método do tipo `scope` no modelo Eloquent.
+
+Os escopos sempre devem retornar uma instância do **query builder**:
+
+```php
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class User extends Model
+{
+    /**
+     * Escopo de consulta para incluir apenas usuários populares.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopePopular($query)
     {
-        /**
-         * The "booting" method of the model.
-         *
-         * @return void
-         */
-        protected static function boot()
-        {
-            parent::boot();
-
-            static::addGlobalScope(new AgeScope);
-        }
+        return $query->where('votes', '>', 100);
     }
 
-After adding the scope, a query to `User::all()` will produce the following SQL:
-
-    select * from `users` where `age` > 200
-
-#### Anonymous Global Scopes
-
-Eloquent also allows you to define global scopes using Closures, which is particularly useful for simple scopes that do not warrant a separate class:
-
-    <?php
-
-    namespace App;
-
-    use Illuminate\Database\Eloquent\Builder;
-    use Illuminate\Database\Eloquent\Model;
-
-    class User extends Model
+    /**
+     * Escopo de consulta para incluir apenas usuários ativos.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeActive($query)
     {
-        /**
-         * The "booting" method of the model.
-         *
-         * @return void
-         */
-        protected static function boot()
-        {
-            parent::boot();
-
-            static::addGlobalScope('age', function (Builder $builder) {
-                $builder->where('age', '>', 200);
-            });
-        }
+        return $query->where('active', 1);
     }
+}
+```
 
-#### Removing Global Scopes
+#### Utilizando um escopo local
 
-If you would like to remove a global scope for a given query, you may use the `withoutGlobalScope` method. The method accepts the class name of the global scope as its only argument:
+Depois de definido o escopo, você pode chamar os métodos de escopo ao consultar o modelo. Contudo, você não deve incluir o prefixo `scope` ao chamar o método. Você pode até encadear chamadas para vários escopos, por exemplo:
 
-    User::withoutGlobalScope(AgeScope::class)->get();
+```php
+$users = App\User::popular()->active()->orderBy('created_at')->get();
+```
 
-Or, if you defined the global scope using a Closure:
+A combinação de vários escopos de modelo Eloquent através de um operador de consulta `or` pode exigir o uso de **Closure callbacks**:
 
-    User::withoutGlobalScope('age')->get();
+```php
+$users = App\User::popular()->orWhere(function (Builder $query) {
+    $query->active();
+})->get();
+```
 
-If you would like to remove several or even all of the global scopes, you may use the `withoutGlobalScopes` method:
+No entanto, como isso pode ser complicado, o Laravel fornece um método `orWhere` de "ordem superior" que permite encadear esses escopos com fluência sem o uso de Closures:
 
-    // Remove all of the global scopes...
-    User::withoutGlobalScopes()->get();
+```php
+$users = App\User::popular()->orWhere->active()->get();
+```
 
-    // Remove some of the global scopes...
-    User::withoutGlobalScopes([
-        FirstScope::class, SecondScope::class
-    ])->get();
+#### Escopos dinâmicos
 
-<a name="local-scopes"></a>
-### Local Scopes
+Às vezes, você pode definir um escopo que aceita parâmetros. Para começar, basta adicionar seus parâmetros adicionais ao seu escopo. Os parâmetros do escopo devem ser definidos após o parâmetro `$query`:
 
-Local scopes allow you to define common sets of constraints that you may easily re-use throughout your application. For example, you may need to frequently retrieve all users that are considered "popular". To define a scope, prefix an Eloquent model method with `scope`.
+```php
+<?php
 
-Scopes should always return a query builder instance:
+namespace App;
 
-    <?php
+use Illuminate\Database\Eloquent\Model;
 
-    namespace App;
-
-    use Illuminate\Database\Eloquent\Model;
-
-    class User extends Model
+class User extends Model
+{
+    /**
+     * Escopo de consulta para incluir apenas usuários de um determinado tipo.
+     *
+     * @param  \Illuminate\Database\Eloquent\Builder  $query
+     * @param  mixed  $type
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOfType($query, $type)
     {
-        /**
-         * Scope a query to only include popular users.
-         *
-         * @param  \Illuminate\Database\Eloquent\Builder  $query
-         * @return \Illuminate\Database\Eloquent\Builder
-         */
-        public function scopePopular($query)
-        {
-            return $query->where('votes', '>', 100);
-        }
-
-        /**
-         * Scope a query to only include active users.
-         *
-         * @param  \Illuminate\Database\Eloquent\Builder  $query
-         * @return \Illuminate\Database\Eloquent\Builder
-         */
-        public function scopeActive($query)
-        {
-            return $query->where('active', 1);
-        }
+        return $query->where('type', $type);
     }
+}
+```
 
-#### Utilizing A Local Scope
+Agora, você pode passar os parâmetros ao chamar o escopo:
 
-Once the scope has been defined, you may call the scope methods when querying the model. However, you should not include the `scope` prefix when calling the method. You can even chain calls to various scopes, for example:
+```php
+$users = App\User::ofType('admin')->get();
+```
 
-    $users = App\User::popular()->active()->orderBy('created_at')->get();
+<a name="comparando-modelos"></a>
+## Comparando modelos
 
-Combining multiple Eloquent model scopes via an `or` query operator may require the use of Closure callbacks:
+Às vezes, você pode precisar determinar se dois modelos são iguais. O método `is` pode ser usado para verificar rapidamente dois modelos com a mesma chave primária, tabela e conexão com o banco de dados:
 
-    $users = App\User::popular()->orWhere(function (Builder $query) {
-        $query->active();
-    })->get();
+```php
+if ($post->is($anotherPost)) {
+    //
+}
+```
 
-However, since this can be cumbersome, Laravel provides a "higher order" `orWhere` method that allows you to fluently chain these scopes together without the use of Closures:
+<a name="eventos"></a>
+## Eventos
 
-    $users = App\User::popular()->orWhere->active()->get();
+Modelos eloquentes acionam vários eventos, permitindo conectar nos seguintes pontos no ciclo de vida de um modelo: `retrieved`, `creating`, `created`, `updating`, `updated`, `saving`, `saved`, `deleting`, `deleted`, `restoring`, `restored`. Eventos permitem executar código facilmente cada vez que uma classe de modelo específica é salva ou atualizada no banco de dados. Cada evento recebe a instância do modelo por meio de seu construtor.
 
-#### Dynamic Scopes
+O evento `retrieved` será acionado quando um modelo existente for recuperado do banco de dados. Quando um novo modelo é salvo pela primeira vez, os eventos `creating` e `created` serão acionados. Se um modelo já existe no banco de dados e o método `save` é chamado, os eventos `updating` / `updated` serão acionados. Contudo, em ambos os casos, os eventos `saving` / `saved` serão acionados.
 
-Sometimes you may wish to define a scope that accepts parameters. To get started, just add your additional parameters to your scope. Scope parameters should be defined after the `$query` parameter:
+> Ao emitir uma atualização em massa ou excluir via Eloquent, os eventos do modelo `saved`, `updated`, `deleting` e `deleted` não serão acionados para os modelos afetados. Isso ocorre porque os modelos nunca são realmente recuperados ao emitir uma atualização ou exclusão em massa.
 
-    <?php
+Para começar, defina uma propriedade `$dispatchesEvents` em seu modelo Eloquent que mapeie vários pontos do ciclo de vida do modelo Eloquent para suas próprias classes de eventos:
 
-    namespace App;
+```php
+<?php
 
-    use Illuminate\Database\Eloquent\Model;
+namespace App;
 
-    class User extends Model
-    {
-        /**
-         * Scope a query to only include users of a given type.
-         *
-         * @param  \Illuminate\Database\Eloquent\Builder  $query
-         * @param  mixed  $type
-         * @return \Illuminate\Database\Eloquent\Builder
-         */
-        public function scopeOfType($query, $type)
-        {
-            return $query->where('type', $type);
-        }
-    }
+use App\Events\UserDeleted;
+use App\Events\UserSaved;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 
-Now, you may pass the parameters when calling the scope:
+class User extends Authenticatable
+{
+    use Notifiable;
 
-    $users = App\User::ofType('admin')->get();
+    /**
+     * Mapa de eventos para o modelo.
+     *
+     * @var array
+     */
+    protected $dispatchesEvents = [
+        'saved' => UserSaved::class,
+        'deleted' => UserDeleted::class,
+    ];
+}
+```
 
-<a name="comparing-models"></a>
-## Comparing Models
-
-Sometimes you may need to determine if two models are the "same". The `is` method may be used to quickly verify two models have same primary key, table, and database connection:
-
-    if ($post->is($anotherPost)) {
-        //
-    }
-
-<a name="events"></a>
-## Events
-
-Eloquent models fire several events, allowing you to hook into the following points in a model's lifecycle: `retrieved`, `creating`, `created`, `updating`, `updated`, `saving`, `saved`, `deleting`, `deleted`, `restoring`, `restored`. Events allow you to easily execute code each time a specific model class is saved or updated in the database. Each event receives the instance of the model through its constructor.
-
-The `retrieved` event will fire when an existing model is retrieved from the database. When a new model is saved for the first time, the `creating` and `created` events will fire. If a model already existed in the database and the `save` method is called, the `updating` / `updated` events will fire. However, in both cases, the `saving` / `saved` events will fire.
-
-> {note} When issuing a mass update or delete via Eloquent, the `saved`, `updated`, `deleting`, and `deleted` model events will not be fired for the affected models. This is because the models are never actually retrieved when issuing a mass update or delete.
-
-To get started, define a `$dispatchesEvents` property on your Eloquent model that maps various points of the Eloquent model's lifecycle to your own [event classes](/docs/{{version}}/events):
-
-    <?php
-
-    namespace App;
-
-    use App\Events\UserDeleted;
-    use App\Events\UserSaved;
-    use Illuminate\Foundation\Auth\User as Authenticatable;
-
-    class User extends Authenticatable
-    {
-        use Notifiable;
-
-        /**
-         * The event map for the model.
-         *
-         * @var array
-         */
-        protected $dispatchesEvents = [
-            'saved' => UserSaved::class,
-            'deleted' => UserDeleted::class,
-        ];
-    }
-
-After defining and mapping your Eloquent events, you may use [event listeners](https://laravel.com/docs/{{version}}/events#defining-listeners) to handle the events.
+Após definir e mapear seus eventos Eloquent, você poderá usar **ouvintes de eventos** para manipular os eventos.
 
 <a name="observers"></a>
 ### Observers
 
-#### Defining Observers
+#### Definindo observers
 
-If you are listening for many events on a given model, you may use observers to group all of your listeners into a single class. Observers classes have method names which reflect the Eloquent events you wish to listen for. Each of these methods receives the model as their only argument. The `make:observer` Artisan command is the easiest way to create a new observer class:
+Se você estiver ouvindo muitos eventos em um determinado modelo, poderá usar observadores para agrupar todos os seus ouvintes em uma única classe. As classes de observadores têm nomes de métodos que refletem os eventos eloquentes que você deseja ouvir. Cada um desses métodos recebe o modelo como seu único argumento. O comando `php artisan make:observer` é a maneira mais fácil de criar uma nova classe de observador:
 
-    php artisan make:observer UserObserver --model=User
+```bash
+php artisan make:observer UserObserver --model=User
+```
 
-This command will place the new observer in your `App/Observers` directory. If this directory does not exist, Artisan will create it for you. Your fresh observer will look like the following:
+Este comando colocará o novo observador no diretório `App/Observers`. Se esse diretório não existir, o Artisan o criará para você. Seu novo observador terá a seguinte aparência:
 
-    <?php
+```php
+<?php
 
-    namespace App\Observers;
+namespace App\Observers;
 
-    use App\User;
+use App\User;
 
-    class UserObserver
+class UserObserver
+{
+    /**
+     * Manipule o evento "created" do Usuário.
+     *
+     * @param  \App\User  $user
+     * @return void
+     */
+    public function created(User $user)
     {
-        /**
-         * Handle the User "created" event.
-         *
-         * @param  \App\User  $user
-         * @return void
-         */
-        public function created(User $user)
-        {
-            //
-        }
-
-        /**
-         * Handle the User "updated" event.
-         *
-         * @param  \App\User  $user
-         * @return void
-         */
-        public function updated(User $user)
-        {
-            //
-        }
-
-        /**
-         * Handle the User "deleted" event.
-         *
-         * @param  \App\User  $user
-         * @return void
-         */
-        public function deleted(User $user)
-        {
-            //
-        }
-
-        /**
-         * Handle the User "forceDeleted" event.
-         *
-         * @param  \App\User  $user
-         * @return void
-         */
-        public function forceDeleted(User $user)
-        {
-            //
-        }
+        //
     }
 
-To register an observer, use the `observe` method on the model you wish to observe. You may register observers in the `boot` method of one of your service providers. In this example, we'll register the observer in the `AppServiceProvider`:
-
-    <?php
-
-    namespace App\Providers;
-
-    use App\Observers\UserObserver;
-    use App\User;
-    use Illuminate\Support\ServiceProvider;
-
-    class AppServiceProvider extends ServiceProvider
+    /**
+     * Manipule o evento "updated" do Usuário.
+     *
+     * @param  \App\User  $user
+     * @return void
+     */
+    public function updated(User $user)
     {
-        /**
-         * Register any application services.
-         *
-         * @return void
-         */
-        public function register()
-        {
-            //
-        }
-
-        /**
-         * Bootstrap any application services.
-         *
-         * @return void
-         */
-        public function boot()
-        {
-            User::observe(UserObserver::class);
-        }
+        //
     }
+
+    /**
+     * Manipule o evento "deleted" do usuário.
+     *
+     * @param  \App\User  $user
+     * @return void
+     */
+    public function deleted(User $user)
+    {
+        //
+    }
+
+    /**
+     * Manipule o evento "forceDeleted" do usuário.
+     *
+     * @param  \App\User  $user
+     * @return void
+     */
+    public function forceDeleted(User $user)
+    {
+        //
+    }
+}
+```
+
+Para registrar um observador, use o método `observe` no modelo que você deseja observar. Você pode registrar observadores no método `boot` de um de seus provedores de serviços. Neste exemplo, registraremos o observador no `AppServiceProvider`:
+
+```php
+<?php
+
+namespace App\Providers;
+
+use App\Observers\UserObserver;
+use App\User;
+use Illuminate\Support\ServiceProvider;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Registre qualquer serviço de aplicativo.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        //
+    }
+
+    /**
+     * Inicialize todos os serviços de aplicativos.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        User::observe(UserObserver::class);
+    }
+}
+```
