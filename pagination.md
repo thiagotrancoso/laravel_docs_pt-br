@@ -193,7 +193,7 @@ Por padrão, as visualizações renderizadas para exibir os links de paginação
 {{ $paginator->links('view.name', ['foo' => 'bar']) }}
 ```
 
-No entanto, a maneira mais fácil de personalizar as visualizações de paginação é exportando-as para o diretório `resources/views/vendor` usando o comando `php artisan vendor:publish`:
+No entanto, a maneira mais fácil de personalizar as visualizações de paginação é exportando-as para o diretório `resources/views/vendor` usando o comando `vendor:publish`:
 
 ```bash
 php artisan vendor:publish --tag=laravel-pagination
